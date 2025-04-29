@@ -38,10 +38,10 @@ Espaço reservado para monitores discutirem assuntos internos, orientarem outros
 Acesso restrito para garantir um ambiente de planejamento e suporte.
 
 ## Membros
-Amanda Gabriela
+<a href="https://github.com/amandagabriela74">Amanda Gabriela</a>
 
-Alan José
+<a href="https://github.com/Alan-Jose-Araujo">Alan José</a>
 
-Paulo Cabral
+<a href="https://github.com/jadsonfe">Jadson Andreys</a>
 
-Jadson Andreys
+<a href="https://github.com/pauloJ-r">Paulo Cabral</a>
