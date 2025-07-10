@@ -1,21 +1,27 @@
 import AppLogoIcon from '@/assets/icons/app-logo-icon.svg';
 import NotificationIcon from '@/assets/icons/notification-icon.svg';
-import { Image, StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 export default function AppHeaderBar() {
     return (
         <View style={styles.container}>
 
-            <AppLogoIcon width={40} height={40}/>
+            <TouchableOpacity>
+                <AppLogoIcon width={40} height={40}/>
+            </TouchableOpacity>
 
             <View style={styles.actionsContainer}>
 
-                <NotificationIcon width={30} height={30}/>
+                <TouchableOpacity>
+                    <NotificationIcon width={30} height={30}/>
+                </TouchableOpacity>
 
-                <Image
-                    source={{ uri: 'https://i.pravatar.cc/150?img=3' }}
-                    style={styles.profileImage}
-                />
+                <TouchableOpacity >
+                    <Image
+                        source={{ uri: 'https://i.pravatar.cc/150?img=3' }}
+                        style={styles.profileImage}
+                    />
+                </TouchableOpacity>
 
             </View>
 
