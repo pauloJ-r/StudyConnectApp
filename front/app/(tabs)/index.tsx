@@ -1,4 +1,5 @@
 import AppHeaderBar from "@/components/AppHeaderBar";
+import { Colors } from "@/constants/Colors";
 import { SafeAreaView, View, StyleSheet } from "react-native";
 
 export default function HomeScreen() {
@@ -17,6 +18,6 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     flex: 1,
-    backgroundColor: '#E7E7E7',
+    backgroundColor: Colors.light.background,
   }
 });
