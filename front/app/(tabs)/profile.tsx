@@ -68,7 +68,7 @@ export default function ProfilePage() {
 const styles = StyleSheet.create({
     container: {
         padding: PADDING_CONTAINER, // Use a constante aqui
-        backgroundColor: '#eee',
+        backgroundColor: '#E7E7E7',
         flex: 1,
     },
     switcherContainer: {
