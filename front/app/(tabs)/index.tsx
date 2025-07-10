@@ -1,4 +1,5 @@
 import AppHeaderBar from "@/components/AppHeaderBar";
+import SearchBar from "@/components/SearchBar";
 import { Colors } from "@/constants/Colors";
 import { SafeAreaView, View, StyleSheet } from "react-native";
 
@@ -8,6 +9,10 @@ export default function HomeScreen() {
       <View style={styles.container}>
 
         <AppHeaderBar/>
+
+        {/* Para usar o componente de searchbar passar parâmetro de callback para 'onSearch' */}
+        {/* E para a ação do filtro (abrir modal, etx...) passar callback para 'onFilterPress' */}
+        <SearchBar/>
 
       </View>
     </SafeAreaView>
