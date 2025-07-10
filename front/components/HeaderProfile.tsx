@@ -1,5 +1,6 @@
 import React from "react";
-import { View, Text, Image, StyleSheet } from "react-native";
+import { View, Text, Image, StyleSheet, TouchableOpacity,Linking } from "react-native";
+import { Colors } from "@/constants/Colors";
 
 type HeaderProfileProps = {
   name: string;
@@ -7,6 +8,8 @@ type HeaderProfileProps = {
   badge: string;
   description: string;
 };
+
+
 
 export function HeaderProfile({name,course,badge,description}: HeaderProfileProps) {
 return (
@@ -20,8 +23,14 @@ return (
       <Text style={styles.badge}>{badge}</Text>
       <Text style={styles.description}>{description}</Text>
       <View style={styles.socialButtons}>
-        <Text style={styles.button}>GitHub</Text>
-        <Text style={styles.button}>LinkedIn</Text>
+
+        <TouchableOpacity style={styles.button} onPress={() => Linking.openURL('github.com')}>
+          <Text style={styles.text}>GitHub</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={() => Linking.openURL('linkedin.com')}>
+          <Text style={styles.text}>LinkedIn</Text>
+        </TouchableOpacity>
+
       </View>
     </View>
   );
@@ -31,7 +40,10 @@ return (
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    marginBottom: 24,
+    backgroundColor: '#F6F6F6',
+    paddingBottom: 16,
+    paddingTop: 16,
+    borderRadius: 8,
   },
   avatar: {
     width: 96,
@@ -53,27 +65,36 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     paddingHorizontal: 8,
     backgroundColor: '#E0D8F9',
-    color: '#6A0DAD',
+    color: Colors.primary_1,
     borderRadius: 12,
   },
   description: {
-    textAlign: 'center',
+
     fontSize: 14,
     marginTop: 8,
     color: '#444',
-    paddingHorizontal: 16,
+    width: '85%',
   },
   socialButtons: {
     flexDirection: 'row',
     marginTop: 16,
-    gap: 12,
+    gap: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+
   },
   button: {
-    backgroundColor: '#6A0DAD',
-    color: '#fff',
-    paddingVertical: 8,
-    paddingHorizontal: 16,
+    backgroundColor: Colors.primary_1,
+    paddingVertical: 12,
+    paddingHorizontal: 8,
     borderRadius: 8,
-    marginHorizontal: 8,
+    width: '40%',
+  
   },
+  text:{
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '500',
+    textAlign: 'center',
+  }
 });
