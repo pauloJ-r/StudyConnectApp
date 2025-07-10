@@ -28,7 +28,14 @@ export default function ProfilePage() {
     return (
         <SafeAreaView style={{ flex: 1 }}>
         <ScrollView style={styles.container}>
-            <HeaderProfile />
+            <HeaderProfile name="Pedro Santiago"
+            course="Sistema Para Internet"
+            badge="🟣 Colaborador Ativo"
+            description="Estudante apaixonado por tecnologia. Sempre disposto a ajudar colegas com dúvidas de programação."
+            
+            
+            
+            />
 
             {/* O statsContainer agora só precisa do wrap e do gap */}
             <View style={styles.statsContainer}>

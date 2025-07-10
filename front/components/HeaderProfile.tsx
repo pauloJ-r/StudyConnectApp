@@ -1,19 +1,24 @@
 import React from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
 
-export function HeaderProfile() {
+type HeaderProfileProps = {
+  name: string;
+  course: string;
+  badge: string;
+  description: string;
+};
+
+export function HeaderProfile({name,course,badge,description}: HeaderProfileProps) {
 return (
     <View style={styles.container}>
       <Image
         source={{ uri: 'https://i.pravatar.cc/150?img=3' }}
         style={styles.avatar}
       />
-      <Text style={styles.name}>Pedro Santiago</Text>
-      <Text style={styles.course}>Sistema Para Internet</Text>
-      <Text style={styles.badge}>🟣 Colaborador Ativo</Text>
-      <Text style={styles.description}>
-        Estudante apaixonado por tecnologia. Sempre disposto a ajudar colegas com dúvidas de programação.
-      </Text>
+      <Text style={styles.name}>{name}</Text>
+      <Text style={styles.course}>{course}</Text>
+      <Text style={styles.badge}>{badge}</Text>
+      <Text style={styles.description}>{description}</Text>
       <View style={styles.socialButtons}>
         <Text style={styles.button}>GitHub</Text>
         <Text style={styles.button}>LinkedIn</Text>
