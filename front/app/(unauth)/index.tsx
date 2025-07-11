@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
   },
   footer: {
     position: 'absolute',
-    bottom: 40, // equivalente a bottom-10 (10 * 4 = 40 pixels)
+    bottom: 40, 
     left: 0,
     right: 0,
     alignItems: 'center',
