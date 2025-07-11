@@ -44,7 +44,7 @@ export default function PostItem({ postData }: PostProps) {
                         </TouchableOpacity>
 
                         <Text style={{ marginStart: 5, ...styles.postFooterActionsText }}>
-                            {postData.comments}
+                            {postData.comments?.length}
                         </Text>
                     </View>
 
