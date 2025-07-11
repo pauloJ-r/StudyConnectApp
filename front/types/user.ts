@@ -1,8 +1,8 @@
-interface UserBadge {
+export interface UserBadge {
     name: string;
 };
 
-interface UserSocialLink {
+export interface UserSocialLink {
     url: string
 };
 
@@ -11,6 +11,7 @@ export interface User {
     name: string;
     email: string;
     password: string;
+    course: string; //Temporary.
     picturePath?: string;
     bio?: string;
     github?: UserSocialLink;
