@@ -1,5 +1,6 @@
 import AppHeaderBar from "@/components/AppHeaderBar";
 import SearchBar from "@/components/SearchBar";
+import HomeTabSwitcher from "@/components/HomeTabSwitcher";
 import { Colors } from "@/constants/Colors";
 import { SafeAreaView, View, StyleSheet } from "react-native";
 
@@ -13,6 +14,10 @@ export default function HomeScreen() {
         {/* Para usar o componente de searchbar passar parâmetro de callback para 'onSearch' */}
         {/* E para a ação do filtro (abrir modal, etx...) passar callback para 'onFilterPress' */}
         <SearchBar/>
+
+        {/* Componente temporário. */}
+        {/* TODO: Transformar em wrapper para tonar tabs flexíveis. */}
+        <HomeTabSwitcher/>
 
       </View>
     </SafeAreaView>
