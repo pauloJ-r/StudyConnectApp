@@ -6,12 +6,15 @@ export interface UserSocialLink {
     url: string
 };
 
+export interface Course {
+    name: string;
+};
+
 export interface User {
     id: number;
     name: string;
     email: string;
-    password: string;
-    course: string; //Temporary.
+    course: Course; //Temporary.
     picturePath?: string;
     bio?: string;
     github?: UserSocialLink;
