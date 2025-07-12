@@ -3,6 +3,7 @@ import SearchBar from "@/components/SearchBar";
 import HomeTabSwitcher from "@/components/HomeTabSwitcher";
 import { Colors } from "@/constants/Colors";
 import { SafeAreaView, View, StyleSheet } from "react-native";
+import PostList from "@/components/PostList";
 
 export default function HomeScreen() {
   return (
@@ -18,6 +19,8 @@ export default function HomeScreen() {
         {/* Componente temporário. */}
         {/* TODO: Transformar em wrapper para tonar tabs flexíveis. */}
         <HomeTabSwitcher/>
+
+        <PostList posts={[]}/>
 
       </View>
     </SafeAreaView>
