@@ -19,7 +19,6 @@ function EmptyPostMessage() {
 export default function PostList({posts}: PostListProps) {    
     return (
         <FlatList
-            style={styles.container}
             showsHorizontalScrollIndicator={false}
             showsVerticalScrollIndicator={false}
             ListEmptyComponent={<EmptyPostMessage/>}
@@ -33,9 +32,6 @@ export default function PostList({posts}: PostListProps) {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        marginTop: 12,
-    },
     emptyPostMessageContainer: {
         flexDirection: 'column',
         flex: 1,
