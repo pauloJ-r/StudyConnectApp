@@ -71,7 +71,8 @@ export default function PostItem({ postData }: PostProps) {
 
 const styles = StyleSheet.create({
     container: {
-        padding: 16,
+        padding: 18,
+        marginVertical: 16,
         backgroundColor: '#FFF',
         borderRadius: 16,
         flexDirection: 'column',
