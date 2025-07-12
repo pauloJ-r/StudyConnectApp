@@ -9,6 +9,7 @@ export default function PostUserCard({userData}: PostUserCardProps) {
     return (
         <View style={styles.container}>
             <View style={styles.imageCardContainer}>
+                {/* TODO: Substituir imagem de fallback para a foto de um user vazio. */}
                 <Image
                     source={{ uri: userData.picturePath || 'https://i.pravatar.cc/150?img=3' }}
                     style={styles.userProfileImage}
