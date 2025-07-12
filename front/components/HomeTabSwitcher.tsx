@@ -7,10 +7,10 @@ export default function HomeTabSwitcher() {
  <View style={styles.container}>
       <View style={styles.tabs}>
         <TouchableOpacity style={styles.activeTab}>
-          <Text style={styles.activeText}>Feed Geral</Text>
+          <Text style={[styles.text, styles.activeText]}>Feed Geral</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.inactiveTab}>
-          <Text style={styles.inactiveText}>Meus Grupos</Text>
+          <Text style={[styles.text, styles.inactiveText]}>Meus Grupos</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -48,14 +48,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '50%',
   },
+  text: {
+    fontWeight: '500',
+    fontSize: 16,
+  },
   activeText: {
     color: '#fff',
     fontWeight: '500',
-    fontSize: 16,
   },
   inactiveText: {
     color: '#444',
     fontWeight: '500',
-    fontSize: 16,
   }
 });
