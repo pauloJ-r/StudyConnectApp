@@ -1,28 +1,27 @@
 import AppHeaderBar from "@/components/AppHeaderBar";
 import SearchBar from "@/components/SearchBar";
-import HomeTabSwitcher from "@/components/HomeTabSwitcher";
 import { Colors } from "@/constants/Colors";
-import { SafeAreaView, View, StyleSheet } from "react-native";
-import PostList from "@/components/PostList";
+import { SafeAreaView, View, StyleSheet, Text } from "react-native";
 import { useState } from "react";
 import { FeedEntity } from "@/types/feed_entity_enum";
+import BaseTabSwitcher from "@/components/BaseTabSwitcher";
+import TabSwitcherSelector from "@/components/TabSwitcherSelector";
+import PostList from "@/components/PostList";
+
+type TabOption = 'posts' | 'groups';
 
 export default function HomeScreen() {
   // States.
+  const [activeTab, setActiveTab] = useState<TabOption>('posts');
   const [feedEntity, setFeedEntity] = useState(FeedEntity.Post);
-  const [posts, setPosts] = useState([]);
-  const [groups, setGroups] = useState([]);
 
-  // Componentes de listas.
-  const feedList = () => {
-    if(feedEntity == FeedEntity.Post) {
-        return (<PostList posts={posts}/>) ;
-    } else if(feedEntity == FeedEntity.Group) {
-      return (<View></View>); // TODO: Substituir por listagem de 
-    }
-  };
+  function handleTabChange(tab: TabOption) {
+    setActiveTab(tab);
+    if(tab === 'posts') setFeedEntity(FeedEntity.Post);
+    else if(tab === 'groups') setFeedEntity(FeedEntity.Group);
+  }
 
-  // TODO: Adicionar useEffect para dar fetch na entidade de feed.
+  // TODO: Adicionar useEffect para dar fetch a entidade de feed
 
   return (
     <SafeAreaView style={{flex: 1}}>
@@ -36,9 +35,27 @@ export default function HomeScreen() {
 
         {/* Componente temporário. */}
         {/* TODO: Transformar em wrapper para tonar tabs flexíveis. */}
-        <HomeTabSwitcher/>
+        {/* <HomeTabSwitcher/> */}
+        <BaseTabSwitcher>
 
-        {feedList()}
+          <TabSwitcherSelector
+          text="Feed Geral"
+          isActive={activeTab === 'posts'}
+          onTabPress={() => handleTabChange('posts')}
+          />
+
+          <TabSwitcherSelector
+          text="Meus Grupos"
+          isActive={activeTab === 'groups'}
+          onTabPress={() => handleTabChange('groups')}
+          />
+
+        </BaseTabSwitcher>
+
+        <View style={styles.feedContainer}>
+          {activeTab === 'posts' && <PostList posts={[]}/>} {/* Array vazio temporário, até a feature da busca. */}
+          {activeTab === 'groups' && <View><Text>Tab de grupos</Text></View>}
+        </View>
 
       </View>
     </SafeAreaView>
@@ -50,5 +67,8 @@ const styles = StyleSheet.create({
     padding: 16,
     flex: 1,
     backgroundColor: Colors.light.background,
+  },
+  feedContainer: {
+    marginTop: 20,
   }
 });
