@@ -53,7 +53,7 @@ export default function HomeScreen() {
         </BaseTabSwitcher>
 
         <View style={styles.feedContainer}>
-          {activeTab === 'posts' && <PostList posts={[]}/>} {/* Array vazio temporário, até a feature da busca. */}
+          {activeTab === 'posts' && <PostList posts={[]}/>}
           {activeTab === 'groups' && <View><Text>Tab de grupos</Text></View>}
         </View>
 
