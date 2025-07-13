@@ -23,5 +23,5 @@ export interface Post {
     comments?: Comment[];
     tags: PostTag[];
     createdAt: string
-    updatedAt?: string
+    updatedAt: string | null;
 };
