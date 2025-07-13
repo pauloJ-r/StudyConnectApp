@@ -1,55 +1,17 @@
-import { Image } from 'expo-image';
-import { View, SafeAreaView, StatusBar, StyleSheet } from 'react-native';
+import React from 'react';
+import { createStackNavigator } from '@react-navigation/stack';
+import SplashScreen from './splashScreen';
+import OnboardingScreen from './onboarding';
+import HomeScreen from '../(tabs)/index'; // ou SignupScreen, adapte se o nome for diferente
 
-export default function SplashScreen() {
+const Stack = createStackNavigator();
+
+export default function UnauthStack() {
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content"  />
-
-  
-      <View style={styles.centerContent}>
-        <Image
-          source={require('../../assets/animations/Logo.gif')}
-          style={styles.logo}
-          contentFit="contain"
-        />
-      </View>
-
-
-      <View style={styles.footer}>
-        <Image
-          source={require('../../assets/images/01.png')}
-          contentFit="contain"
-          style={styles.footerImage}
-        />
-      </View>
-    </SafeAreaView>
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Splash" component={SplashScreen} />
+      <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+      <Stack.Screen name="Login" component={HomeScreen} />
+    </Stack.Navigator>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-  },
-  centerContent: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  logo: {
-    width: 350,
-    height: 350,
-  },
-  footer: {
-    position: 'absolute',
-    bottom: 40, 
-    left: 0,
-    right: 0,
-    alignItems: 'center',
-  },
-  footerImage: {
-    width: 180,
-    height: 150,
-  },
-});
