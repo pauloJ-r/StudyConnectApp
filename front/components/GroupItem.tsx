@@ -1,5 +1,6 @@
 import GroupParticipantsIcon from '@/assets/icons/group-participants-icon.svg';
 import { Colors } from '@/constants/Colors';
+import { IndexableStudyGroup } from '@/types/group';
 import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
 
 type GroupParticipantThumbnailImageProps = {
@@ -8,6 +9,10 @@ type GroupParticipantThumbnailImageProps = {
 
 type SeeMoreGroupDetailsButtonProps = {
     onButtonPress?: () => void;
+};
+
+type GroupItemProps = {
+    groupData: IndexableStudyGroup;
 };
 
 function GroupParticipantThumbnailImage({ source }: GroupParticipantThumbnailImageProps) {
@@ -27,23 +32,25 @@ function SeeMoreGroupDetailsButton({ onButtonPress }: SeeMoreGroupDetailsButtonP
     );
 }
 
-export default function GroupItem() {
+export default function GroupItem({groupData}: GroupItemProps) {
     return (
         <View style={styles.container}>
 
             <View style={styles.groupInfoContainer}>
                 <View style={styles.groupInfoNameContainer}>
-                    <Text style={styles.groupInfoGroupName}>Design UX - Monitoria</Text>
+                    <Text style={styles.groupInfoGroupName}>{groupData.name}</Text>
                 </View>
 
                 <View style={styles.groupInfoGroupParticipantsThumbnailContainer}>
-                    {/* TODO: Adicionar conform as imagens aparecem. */}
+                    {groupData.thumbnailParticipantsImages?.map((imageSource: string) => (
+                        <GroupParticipantThumbnailImage source={imageSource}/>
+                    ))}
                 </View>
             </View>
 
             <View style={styles.groupParticipantsCountContainer}>
                 <GroupParticipantsIcon width={40} height={40} />
-                <Text style={styles.groupParticipantsCountText}>15 Participantes</Text>
+                <Text style={styles.groupParticipantsCountText}>{groupData.participantsQuantity} Participantes</Text>
             </View>
 
             <SeeMoreGroupDetailsButton/>
@@ -83,6 +90,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFF',
         borderRadius: 12,
         padding: 32,
+        marginVertical: 16,
     },
     groupInfoContainer: {
         flexDirection: 'row',
