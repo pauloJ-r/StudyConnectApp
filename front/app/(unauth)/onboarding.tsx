@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useState } from "react";
 import Onboarding from "react-native-onboarding-swiper";
 import { Image, StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { Colors } from "@/constants/Colors";
@@ -11,6 +11,17 @@ interface SquareProps {
 
 export default function OnboardingScreen() {
   const router = useRouter();
+
+  const onboardingRef = useRef<Onboarding>(null);
+  const [index, setIndex] = useState(0);
+
+  const handlePress = () => {
+    if (index === pages.length - 1) {
+      router.replace("/profile");
+    } else {
+      onboardingRef.current?.goNext();
+    }
+  };
 
   const pages = [
     {
@@ -48,26 +59,20 @@ export default function OnboardingScreen() {
     },
   ];
 
-  const Square: React.FC<SquareProps> = ({ isLight, selected }) => {
-    const backgroundColor = selected
-      ? isLight
-        ? "#000"
-        : "#fff"
-      : "rgba(0, 0, 0, 0.3)";
+  const Square: React.FC<SquareProps> = ({ selected }) => {
     return (
       <View
         style={{
-          width: 8,
-          height: 8,
-          marginHorizontal: 3,
-          backgroundColor,
+          width: 10,
+          height: 10,
+          borderRadius: 5,
+          marginHorizontal: 4,
+          backgroundColor: selected ? Colors.primary_1 : "#ccc",
+          opacity: selected ? 1 : 0.5,
         }}
       />
     );
   };
-
-  const Next = (props: any) => <AppButton label="Próximo" {...props} />;
-  const Done = (props: any) => <AppButton label="Concluir" {...props} />;
 
   return (
     <View style={styles.wrapper}>
@@ -77,17 +82,24 @@ export default function OnboardingScreen() {
       />
 
       <Onboarding
+        ref={onboardingRef}
         pages={pages}
         DotComponent={Square}
-        NextButtonComponent={Next}
+        showNext={false}
+        showDone={false}
         showSkip={false}
-        DoneButtonComponent={Done}
-        onDone={() => router.replace("/profile")}
+        bottomBarHeight={80}
+        bottomBarHighlight={false}
+        pageIndexCallback={setIndex}
         containerStyles={styles.container}
         titleStyles={styles.title}
         subTitleStyles={styles.subtitle}
-        bottomBarHighlight={false}
-        bottomBarHeight={100}
+      />
+
+      <AppButton
+        label={index === pages.length - 1 ? "Próximo" : "Próximo"}
+        onPress={handlePress}
+        style={styles.button}
       />
 
       <TouchableOpacity onPress={() => router.replace("/profile")}>
@@ -101,7 +113,6 @@ const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
     backgroundColor: "#F7F7F7",
-    /* paddingHorizontal: 15, */
   },
   logo: {
     width: 180,
@@ -114,7 +125,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     backgroundColor: "#F7F7F7",
-    paddingBottom: 70,
+    paddingBottom: 100,
   },
   image: {
     width: 80,
@@ -123,7 +134,7 @@ const styles = StyleSheet.create({
   },
   title: {
     color: Colors.primary_1,
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: "bold",
     textAlign: "center",
   },
@@ -140,15 +151,9 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     color: "#555",
   },
-  buttonWrapper: {
-    alignSelf: "center", // ⬅️ centraliza abaixo dos dots
-    paddingHorizontal: 24,
-    paddingVertical: 10,
-    borderRadius: 20,
-    marginTop: 16,
-  },
-  buttonText: {
-    fontSize: 16,
-    fontWeight: "bold",
+  button: {
+    alignSelf: "center",
+    marginBottom: 24,
+    width: 200,
   },
 });
