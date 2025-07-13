@@ -4,7 +4,7 @@ import { View, SafeAreaView, StatusBar, StyleSheet } from 'react-native';
 export default function SplashScreen() {
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+      <StatusBar barStyle="dark-content"  />
 
   
       <View style={styles.centerContent}>
