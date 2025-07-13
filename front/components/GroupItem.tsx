@@ -37,9 +37,7 @@ export default function GroupItem() {
                 </View>
 
                 <View style={styles.groupInfoGroupParticipantsThumbnailContainer}>
-                    {/* <GroupParticipantThumbnailImage source='https://i.pravatar.cc/150?img=3' />
-                    <GroupParticipantThumbnailImage source='https://i.pravatar.cc/150?img=3' />
-                    <GroupParticipantThumbnailImage source='https://i.pravatar.cc/150?img=3' /> */}
+                    {/* TODO: Adicionar conform as imagens aparecem. */}
                 </View>
             </View>
 
