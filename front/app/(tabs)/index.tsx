@@ -1,12 +1,14 @@
 import AppHeaderBar from "@/components/AppHeaderBar";
 import SearchBar from "@/components/SearchBar";
 import { Colors } from "@/constants/Colors";
-import { SafeAreaView, View, StyleSheet, Text } from "react-native";
+import { SafeAreaView, View, StyleSheet } from "react-native";
 import { useState } from "react";
 import { FeedEntity } from "@/types/feed_entity_enum";
 import BaseTabSwitcher from "@/components/BaseTabSwitcher";
 import TabSwitcherSelector from "@/components/TabSwitcherSelector";
 import PostList from "@/components/PostList";
+import JoinNewStudyGroupBalloon from "@/components/JoinNewStudyGroupBalloon";
+import GroupList from "@/components/GroupList";
 
 type TabOption = 'posts' | 'groups';
 
@@ -34,8 +36,6 @@ export default function HomeScreen() {
         <SearchBar/>
 
         {/* Componente temporário. */}
-        {/* TODO: Transformar em wrapper para tonar tabs flexíveis. */}
-        {/* <HomeTabSwitcher/> */}
         <BaseTabSwitcher>
 
           <TabSwitcherSelector
@@ -53,8 +53,19 @@ export default function HomeScreen() {
         </BaseTabSwitcher>
 
         <View style={styles.feedContainer}>
+
+          {/* TODO: Adicionar state de posts e groups. */}
+
+          {/* Posts. */}
           {activeTab === 'posts' && <PostList posts={[]}/>}
-          {activeTab === 'groups' && <View><Text>Tab de grupos</Text></View>}
+
+          {/* Grupos. */}
+          {activeTab === 'groups' && 
+          <View>
+            <GroupList groups={[]}/>
+            <JoinNewStudyGroupBalloon/>
+          </View>}
+
         </View>
 
       </View>
@@ -70,5 +81,6 @@ const styles = StyleSheet.create({
   },
   feedContainer: {
     marginTop: 20,
+    flex: 1,
   }
 });
