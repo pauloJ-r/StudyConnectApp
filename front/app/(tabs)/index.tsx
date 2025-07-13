@@ -18,7 +18,7 @@ export default function HomeScreen() {
         {/* Componente temporário. */}
         {/* TODO: Transformar em wrapper para tonar tabs flexíveis. */}
         <HomeTabSwitcher/>
-
+        
       </View>
     </SafeAreaView>
   );
