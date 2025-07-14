@@ -1,61 +1,73 @@
 import { Tabs } from "expo-router";
 import React from "react";
-import { Platform } from "react-native";
+import { Platform, StatusBar } from "react-native";
 import { HapticTab } from "@/components/HapticTab";
 import TabBarBackground from "@/components/ui/TabBarBackground";
 import { Colors } from "@/constants/Colors";
-import SearchIcon from "@/assets/icons/search-icon.svg";
-import GroupsIcon from "@/assets/icons/groups-icon.svg";
-import UserIcon from "@/assets/icons/user-icon.svg";
-import HomeIcon from "@/assets/icons/home-icon.svg";
+import { IconSymbol } from "@/components/ui/IconSymbol"; // importa aqui
 
 export default function TabLayout() {
   return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors.primary_1,
-        headerShown: false,
-        tabBarButton: HapticTab,
-        tabBarBackground: TabBarBackground,
-        tabBarStyle: Platform.select({
-          ios: {
-            position: "absolute",
-          },
-          default: {},
-        }),
-      }}
-    >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: "Início",
-          tabBarIcon: ({ color }) => <HomeIcon width={28} height={28} />,
+    <>
+        <StatusBar
+            barStyle="dark-content"
+            backgroundColor={Colors.light.background}
+          />
+      <Tabs
+        screenOptions={{
+          tabBarActiveTintColor: Colors.primary_1,
+          headerShown: false,
+          tabBarButton: HapticTab,
+          tabBarBackground: TabBarBackground,
+          tabBarStyle: Platform.select({
+            ios: {
+              position: "absolute",
+            },
+            default: {
+              position: "absolute",
+              borderTopWidth: 0,
+              shadowColor: "transparent",
+            },
+          }),
         }}
-      />
-      <Tabs.Screen
-        name="group-teste"
-        options={{
-          title: "Grupos",
-          tabBarIcon: ({ color }) => <GroupsIcon width={28} height={28} />,
-        }}
-      />
-      <Tabs.Screen
-        name="search-teste"
-        options={{
-          title: "Pesquisar",
-          tabBarIcon: ({ color }) => (
-            <SearchIcon width={28} height={28} />
-            //<SearchIcon width={28} height={28} fill={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: "Perfil",
-          tabBarIcon: ({ color }) => <UserIcon width={28} height={28} />,
-        }}
-      />
-    </Tabs>
+      >
+        <Tabs.Screen
+          name="index"
+          options={{
+            title: "Início",
+            tabBarIcon: ({ color }) => (
+              <IconSymbol name="house.fill" size={28} color={color} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="group-teste"
+          options={{
+            title: "Grupos",
+            tabBarIcon: ({ color }) => (
+              <IconSymbol name="person.3.fill" size={28} color={color} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="search-teste"
+          options={{
+            title: "Pesquisar",
+            tabBarIcon: ({ color }) => (
+              <IconSymbol name="magnifyingglass" size={28} color={color} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="profile"
+          options={{
+            title: "Perfil",
+            tabBarIcon: ({ color }) => (
+              <IconSymbol name="person.crop.circle.fill" size={28} color={color} />
+            ),
+          }}
+        />
+      </Tabs>
+    </>
   );
 }
