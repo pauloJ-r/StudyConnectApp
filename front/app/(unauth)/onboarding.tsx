@@ -125,7 +125,10 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     backgroundColor: "#F7F7F7",
-    paddingBottom: 100,
+    paddingBottom: 200,
+    width: "45%",
+    height: "100%",
+
   },
   image: {
     width: 80,
@@ -135,12 +138,14 @@ const styles = StyleSheet.create({
   title: {
     color: Colors.primary_1,
     fontSize: 26,
+    fontFamily: "Poppins-SemiBold",
     fontWeight: "bold",
     textAlign: "center",
   },
   subtitle: {
     color: "#555",
     fontSize: 16,
+    fontFamily: "Montserrat-Regular",
     textAlign: "center",
     marginTop: 8,
   },
@@ -148,12 +153,16 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 50,
     fontSize: 14,
+    fontFamily: "Montserrat-Regular",
     fontWeight: "500",
     color: "#555",
   },
   button: {
     alignSelf: "center",
     marginBottom: 24,
-    width: 200,
+    width: "75%",
+    height: 50,
+    flexDirection: "row",
+    justifyContent: "center",
   },
 });

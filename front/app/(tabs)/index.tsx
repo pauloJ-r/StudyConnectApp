@@ -2,17 +2,17 @@ import AppHeaderBar from "@/components/AppHeaderBar";
 import SearchBar from "@/components/SearchBar";
 import HomeTabSwitcher from "@/components/HomeTabSwitcher";
 import { Colors } from "@/constants/Colors";
-import { SafeAreaView, View, StyleSheet, StatusBar } from "react-native";
+import { SafeAreaView, View, StyleSheet } from "react-native";
 
 export default function HomeScreen() {
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <SafeAreaView style={{ flex: 1 }}>
+  
       <View style={styles.container}>
-              <StatusBar barStyle="dark-content" backgroundColor={Colors.light.background} />
 
-        <AppHeaderBar/>
-        <SearchBar/>
-        <HomeTabSwitcher/>
+        <AppHeaderBar />
+        <SearchBar />
+        <HomeTabSwitcher />
 
       </View>
     </SafeAreaView>

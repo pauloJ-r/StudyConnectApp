@@ -1,4 +1,5 @@
 import AppHeaderBar from '@/components/AppHeaderBar';
+import SearchBar from '@/components/SearchBar';
 import { Colors } from '@/constants/Colors';
 import { View, Text, SafeAreaView, StyleSheet } from 'react-native';
 
@@ -7,7 +8,7 @@ export default function GroupTesteScreen() {
     <SafeAreaView style={{flex: 1}}>
     <View style={styles.container}>
          <AppHeaderBar/>
-      <Text>TELA DE GRUPO - Em construção</Text>
+         <SearchBar />
     </View>
     </SafeAreaView>
   );
