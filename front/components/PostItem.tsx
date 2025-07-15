@@ -83,7 +83,8 @@ const styles = StyleSheet.create({
     },
     postContentText: {
         fontSize: 18,
-        fontWeight: '500',
+        fontFamily: 'Poppins-SemiBold',
+        
     },
     postContentContextContainer: {
         marginTop: 10,
@@ -93,11 +94,12 @@ const styles = StyleSheet.create({
     },
     postContentContextText: {
         fontSize: 16,
-        fontWeight: '600',
+        fontFamily: 'Poppins-Regular',
     },
     postBadgesContainer: {
         flexDirection: 'row',
         flexWrap: "wrap",
+        gap: 8,
     },
     postFooterContainer: {
         flexDirection: 'row',
@@ -113,5 +115,6 @@ const styles = StyleSheet.create({
     postFooterActionsText: {
         fontSize: 16,
         fontWeight: '300',
+        fontFamily: 'Poppins-Regular',
     }
 });

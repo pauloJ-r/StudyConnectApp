@@ -42,6 +42,7 @@ const styles = StyleSheet.create({
     joinNewStudyGroupButtonLabel: {
         color: '#FFF',
         fontSize: 16,
+        fontFamily: 'Poppins-Regular',
     },
     // Balloon.
     container: {
@@ -60,7 +61,8 @@ const styles = StyleSheet.create({
     },
     backgroundTextMessage: {
         textAlign: 'center',
-        fontSize: 20,
+        fontSize: 16,
+        fontFamily: 'Poppins-Regular',
         color: '#454545'
     }
 });

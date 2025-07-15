@@ -41,8 +41,8 @@ const styles = StyleSheet.create({
         borderRadius: 16,
     },
     emptyPostMessageText: {
-        fontSize: 20,
-        fontWeight: '600',
-        textAlign: 'center'
+        fontSize: 16,
+        textAlign: 'center',
+        fontFamily: 'Poppins-Regular',
     }
 });

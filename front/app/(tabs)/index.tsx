@@ -9,6 +9,9 @@ import TabSwitcherSelector from "@/components/TabSwitcherSelector";
 import PostList from "@/components/PostList";
 import JoinNewStudyGroupBalloon from "@/components/JoinNewStudyGroupBalloon";
 import GroupList from "@/components/GroupList";
+import { mockPosts, mockIndexableStudyGroups } from "../../mock/homescreen";
+import { AddButton } from "@/components/AddButton";
+
 
 type TabOption = 'posts' | 'groups';
 
@@ -58,16 +61,16 @@ export default function HomeScreen() {
           {/* TODO: Adicionar state de posts e groups. */}
 
           {/* Posts. */}
-          {activeTab === 'posts' && <PostList posts={[]}/>}
+          {activeTab === 'posts' && <PostList posts={mockPosts}/>}
 
           {/* Grupos. */}
           {activeTab === 'groups' && 
           <View>
-            <GroupList groups={[]}/>
+            <GroupList groups={mockIndexableStudyGroups} />
             <JoinNewStudyGroupBalloon/>
           </View>}
-
         </View>
+                <AddButton  />
 
       </View>
     </SafeAreaView>
@@ -83,5 +86,7 @@ const styles = StyleSheet.create({
   feedContainer: {
     marginTop: 20,
     flex: 1,
-  }
+  },
+
+
 });

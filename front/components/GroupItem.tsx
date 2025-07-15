@@ -82,6 +82,7 @@ const styles = StyleSheet.create({
     seeMoreGroupDetailsButtonLabel: {
         color: '#FFF',
         fontSize: 16,
+        fontFamily: 'Poppins-Regular',
     },
 
     // Item.
@@ -104,7 +105,7 @@ const styles = StyleSheet.create({
     groupInfoGroupName: {
         color: '#1B1B1B',
         fontSize: 21,
-        fontWeight: '600'
+        fontFamily: 'Poppins-SemiBold',
     },
     groupInfoGroupParticipantsThumbnailContainer: {
         flexDirection: 'row-reverse',
@@ -116,7 +117,8 @@ const styles = StyleSheet.create({
         marginTop: 20,
     },
     groupParticipantsCountText: {
-        fontSize: 20,
+        fontSize: 16,
         marginStart: 20,
+        fontFamily: 'Montserrat-Regular',
     }
 });

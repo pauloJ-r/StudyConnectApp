@@ -36,8 +36,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     userProfileImage: {
-        width: 76,
-        height: 76,
+        width: 48 ,
+        height: 48,
         borderRadius: 48,
     },
     userInfoContainer: {
@@ -49,10 +49,11 @@ const styles = StyleSheet.create({
     },
     userInfoNameText: {
         fontSize: 18,
-        fontWeight: '600',
+        fontFamily: 'Poppins-SemiBold',
     },
     userInfoNameCourse: {
         fontSize: 16,
+        fontFamily: 'Montserrat-Regular',
         fontWeight: '100',
         color: 'rgba(0, 0, 0, 0.7)'
     }

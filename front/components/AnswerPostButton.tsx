@@ -27,6 +27,7 @@ const styles = StyleSheet.create({
         paddingVertical: 4,
         paddingHorizontal: 16,
         borderRadius: 8,
+        fontFamily: 'Poppins-SemiBold',
         backgroundColor: Colors.primary_1,
     }
 });
