@@ -26,7 +26,8 @@ export default function HomeScreen() {
   // TODO: Adicionar useEffect para dar fetch a entidade de feed
 
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <SafeAreaView style={{ flex: 1 }}>
+  
       <View style={styles.container}>
 
         <AppHeaderBar/>

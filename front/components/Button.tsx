@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
   },
   label: {
     color: "#fff",
-    fontSize: 12,
-    fontWeight: "bold",
+    fontSize: 16,
+    fontFamily: "Poppins-Medium",
   },
 });

@@ -16,7 +16,7 @@ export default function SplashScreen() {
   
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+      
 
       <View style={styles.centerContent}>
         <Image
