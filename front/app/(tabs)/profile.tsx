@@ -1,10 +1,17 @@
 import React from "react";
 // 1. Importe o Dimensions
 import { View, ScrollView, StyleSheet, Dimensions,SafeAreaView } from "react-native";
-
+import { useState } from "react";
+import { FeedEntity } from "@/types/feed_entity_enum";
+import BaseTabSwitcher from "@/components/BaseTabSwitcher";
+import TabSwitcherSelector from "@/components/TabSwitcherSelector";
 import { HeaderProfile } from "@/components/HeaderProfile";
 import { ProfileStats } from "@/components/ProfileStats";
 import { TabSwitcher } from "@/components/TabSwitcher";
+import { mockPosts, mockIndexableStudyGroups } from "../../mock/homescreen";
+import GroupList from "@/components/GroupList";
+import PostList from "@/components/PostList";
+import JoinNewStudyGroupBalloon from "@/components/JoinNewStudyGroupBalloon";
 import { AddButton } from "@/components/AddButton";
 
 // --- Início do Cálculo ---
@@ -23,8 +30,19 @@ const itemWidth = availableWidth / NUM_COLUNAS;
 
 // --- Fim do Cálculo ---
 
+type TabOption = 'perguntas' | 'respostas';
 
 export default function ProfilePage() {
+
+    // States.
+    const [activeTab, setActiveTab] = useState<TabOption>('perguntas');
+    const [feedEntity, setFeedEntity] = useState(FeedEntity.Post);
+
+    function handleTabChange(tab: TabOption) {
+        setActiveTab(tab);
+        if(tab === 'perguntas') setFeedEntity(FeedEntity.Post);
+        else if(tab === 'respostas') setFeedEntity(FeedEntity.Group);
+    }
     return (
         <SafeAreaView style={{ flex: 1 }}>
         <ScrollView style={styles.container}>
@@ -49,13 +67,35 @@ export default function ProfilePage() {
                 <View style={{ width: itemWidth }}>
                     <ProfileStats label="Troféus" value={36} />
                 </View>
-                <View style={{ width: itemWidth }}>
-                    <ProfileStats label="Grupos" value={4} />
+                <View style={styles.grupos}>
+                    <ProfileStats label="Grupos" value={4} disabled />
                 </View>
             </View>
 
             <View style={styles.switcherContainer}>
-                <TabSwitcher />
+                <BaseTabSwitcher > 
+                    <TabSwitcherSelector
+                        text="Perguntas"
+                        isActive={activeTab === 'perguntas'}
+                        onTabPress={() => handleTabChange('perguntas')}
+                    />
+                    <TabSwitcherSelector
+                        text="Respostas"
+                        isActive={activeTab === 'respostas'}
+                        onTabPress={() => handleTabChange('respostas')}
+                    />
+                </BaseTabSwitcher>
+
+                <View>
+                           {activeTab === 'perguntas' && <PostList posts={mockPosts}/>}
+                 
+                           {/* Grupos. */}
+                           {activeTab === 'respostas' && 
+                           <View>
+                             <GroupList groups={mockIndexableStudyGroups} />
+                             <JoinNewStudyGroupBalloon/>
+                           </View>}
+                </View>
             </View>
 
             
@@ -81,5 +121,9 @@ const styles = StyleSheet.create({
         marginBottom: 24,
         marginTop: 16,
         // justifyContent: 'space-between' não é mais necessário com gap
+    },
+    grupos: {
+        width: itemWidth, 
+        
     },
 });

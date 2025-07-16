@@ -6,24 +6,31 @@ import { Colors } from "@/constants/Colors";
 type StatProps = {
   label: string;
   value: number;
+  disabled?: boolean; // 👈 nova propriedade
 };
 
-export function ProfileStats({ label, value }: StatProps) {
+export function ProfileStats({ label, value, disabled = false }: StatProps) {
   const router = useRouter();
 
   const handlePress = () => {
-    if (label.toLowerCase().includes('troféu') || label.toLowerCase().includes('trofeu')) {
-      router.push("/trophy");
-    } else {
-      console.log(`Pressed ${label}`);
+    if (!disabled) {
+      if (label.toLowerCase().includes("troféu") || label.toLowerCase().includes("trofeu")) {
+        router.push("/trophy");
+      } else {
+        console.log(`Pressed ${label}`);
+      }
     }
   };
 
   return (
     <View style={styles.statBox}>
-      <TouchableOpacity style={styles.statInner} onPress={handlePress}>
-        <Text style={styles.statValue}>{value}</Text>
-        <Text style={styles.statLabel}>{label}</Text>
+      <TouchableOpacity
+        style={[styles.statInner, disabled && styles.statInnerDisabled]}
+        onPress={handlePress}
+        activeOpacity={disabled ? 1 : 0.7}
+      >
+        <Text style={[styles.statValue, disabled && styles.disabledText]}>{value}</Text>
+        <Text style={[styles.statLabel, disabled && styles.disabledText]}>{label}</Text>
       </TouchableOpacity>
     </View>
   );
@@ -41,6 +48,9 @@ const styles = StyleSheet.create({
     width: 180,
     height: 120,
   },
+  statInnerDisabled: {
+    opacity: 0.5, // 👈 aparência desativada
+  },
   statValue: {
     fontSize: 32,
     fontWeight: "bold",
@@ -50,5 +60,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#666",
     textAlign: "center",
+  },
+  disabledText: {
+    color: "#999", // 👈 tonalidade cinza mais clara
   },
 });
