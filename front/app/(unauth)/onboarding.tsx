@@ -96,11 +96,7 @@ export default function OnboardingScreen() {
         subTitleStyles={styles.subtitle}
       />
 
-      <AppButton
-        label={index === pages.length - 1 ? "Próximo" : "Próximo"}
-        onPress={handlePress}
-        style={styles.button}
-      />
+      <AppButton label="Próximo" onPress={handlePress} style={styles.button} />
 
       <TouchableOpacity onPress={() => router.replace("/login")}>
         <Text style={styles.skipText}>Pular introdução</Text>
