@@ -4,7 +4,9 @@ const User = require('../models/User');
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const upload = require('../config/multer');
+const multer = require('multer');
+const bucket = require('../config/firebaseConfig');
+const { v4: uuidv4 } = require('uuid');
 
 
 
@@ -129,11 +131,13 @@ class UserController {
     }
 };
 async register(req, res) {
+    // multer em memória (não salvar localmente)
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
     try {
-        // Use `multer` para processar a imagem antes da lógica do registro
         upload.single('picture')(req, res, async function (err) {
             if (err) {
-                return res.status(400).json({ msg: 'Erro ao fazer upload da imagem' });
+                return res.status(400).json({ msg: 'Erro ao processar imagem' });
             }
 
             const { name, email, password, confirmpassword } = req.body;
@@ -145,34 +149,48 @@ async register(req, res) {
                 return res.status(422).json({ msg: 'As senhas não conferem' });
             }
 
-            // Checar se o usuário já existe
             const userExist = await User.findOne({ email });
             if (userExist) {
                 return res.status(422).json({ msg: 'E-mail já em uso' });
             }
 
-            // Criar senha criptografada
             const salt = await bcrypt.genSalt(12);
             const passwordHash = await bcrypt.hash(password, salt);
 
-            // Verificar se a imagem foi enviada
-            const picturePath = req.file ? req.file.path : null;
+            let pictureUrl = null;
 
-            // Criar usuário no banco de dados
+            // Se tiver imagem, envia para o Firebase Storage
+            if (req.file) {
+                const fileName = `profilePictures/${uuidv4()}-${req.file.originalname}`;
+                const file = bucket.file(fileName);
+
+                await file.save(req.file.buffer, {
+                    metadata: {
+                        contentType: req.file.mimetype,
+                    },
+                });
+
+                // Tornar o arquivo público (ou configure segurança como preferir)
+                await file.makePublic();
+
+                pictureUrl = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
+            }
+
             const user = new User({
                 name,
                 email,
                 password: passwordHash,
-                picturePath,
+                picturePath: pictureUrl || "",
             });
 
             await user.save();
             return res.status(201).json({ msg: 'Usuário criado com sucesso!' });
         });
     } catch (error) {
+        console.error(error);
         return res.status(500).json({ msg: 'Erro no servidor' });
     }
-}
+};
 
 
 // Obter os 10 usuários com mais likes (apenas com likes > 0)
