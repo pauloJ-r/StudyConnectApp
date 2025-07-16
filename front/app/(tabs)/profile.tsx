@@ -13,6 +13,7 @@ import GroupList from "@/components/GroupList";
 import PostList from "@/components/PostList";
 import JoinNewStudyGroupBalloon from "@/components/JoinNewStudyGroupBalloon";
 import { AddButton } from "@/components/AddButton";
+import ResponseItem from "@/components/AnswersItem"; // Import AnswerItem component
 
 // --- Início do Cálculo ---
 
@@ -91,9 +92,19 @@ export default function ProfilePage() {
                  
                            {/* Grupos. */}
                            {activeTab === 'respostas' && 
-                           <View>
-                             <GroupList groups={mockIndexableStudyGroups} />
-                             <JoinNewStudyGroupBalloon/>
+                           <View style={{ paddingTop: 10 }}>
+                                <ResponseItem text = "sua pergunta é bem interessante, vc pode tentar de tal forma"
+                                    countLikes={10} 
+                                />
+                                <ResponseItem text = "desse jeito não é o melhor caminho"
+                                    countLikes={5}
+                                />
+                                <ResponseItem text = "assim fica melhor"
+                                    countLikes={3}
+                                />
+                                <ResponseItem text = "fizeram esta mesma pergunta no post anterior talvez lhe ajude"
+                                    countLikes={2}
+                                />
                            </View>}
                 </View>
             </View>

@@ -18,6 +18,8 @@ export function ProfileStats({ label, value, disabled = false }: StatProps) {
         router.push("/trophy");
       } else  if (label.toLowerCase().includes("pergunta")) {
         router.push("/relevantQuest");
+      } else if (label.toLowerCase().includes("resposta")) {
+        router.push("/relevantAnswers");
       }
     }
   };
