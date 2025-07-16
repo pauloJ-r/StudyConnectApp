@@ -6,7 +6,7 @@ import { Colors } from "@/constants/Colors";
 type StatProps = {
   label: string;
   value: number;
-  disabled?: boolean; // 👈 nova propriedade
+  disabled?: boolean;
 };
 
 export function ProfileStats({ label, value, disabled = false }: StatProps) {

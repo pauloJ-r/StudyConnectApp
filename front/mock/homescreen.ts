@@ -3,7 +3,7 @@ import { IndexableStudyGroup, Group } from "@/types/group";
 import { User } from "@/types/user";
 
 // Usuários mockados (completo)
-const mockUsers: User[] = [
+export const mockUsers: User[] = [
   {
     id: 1,
     name: 'João Silva',
@@ -29,7 +29,7 @@ const mockUsers: User[] = [
 ];
 
 // Tags mockadas
-const mockTags: PostTag[] = [
+export const mockTags: PostTag[] = [
   { name: 'React Native' },
   { name: 'Design' },
   { name: 'JavaScript' },
@@ -64,7 +64,7 @@ export const mockPosts: Post[] = [
 ];
 
 // Comments mockados
-const mockComments: Comment[] = [
+export const mockComments: Comment[] = [
   {
     id: 1,
     text: 'Já tentou usar getItemLayout?',
@@ -77,6 +77,8 @@ const mockComments: Comment[] = [
 
 // Associar comments
 mockPosts[0].comments = mockComments;
+
+
 
 // IndexableStudyGroups mockados (resumidos para lista)
 export const mockIndexableStudyGroups: IndexableStudyGroup[] = [
