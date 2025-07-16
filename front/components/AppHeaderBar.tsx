@@ -1,8 +1,11 @@
 import AppLogoIcon from '@/assets/icons/app-logo-icon.svg';
 import NotificationIcon from '@/assets/icons/notification-icon.svg';
+import { useRouter } from 'expo-router';
 import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 export default function AppHeaderBar() {
+    const router = useRouter();
+
     return (
         <View style={styles.container}>
 
@@ -12,7 +15,7 @@ export default function AppHeaderBar() {
 
             <View style={styles.actionsContainer}>
 
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => router.push('/(stack)/notifications')}>
                     <NotificationIcon width={30} height={30}/>
                 </TouchableOpacity>
 
