@@ -16,8 +16,8 @@ export function ProfileStats({ label, value, disabled = false }: StatProps) {
     if (!disabled) {
       if (label.toLowerCase().includes("troféu") || label.toLowerCase().includes("trofeu")) {
         router.push("/trophy");
-      } else {
-        console.log(`Pressed ${label}`);
+      } else  if (label.toLowerCase().includes("pergunta")) {
+        router.push("/relevantQuest");
       }
     }
   };
