@@ -1,23 +1,21 @@
 import { Image } from "expo-image";
-import { View, SafeAreaView, StatusBar, StyleSheet } from "react-native";
+import { View, SafeAreaView, StyleSheet } from "react-native";
 import { useEffect } from "react";
-import { useRouter } from 'expo-router';
+import { useRouter } from "expo-router";
 
 export default function SplashScreen() {
   const router = useRouter();
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      router.replace('/(unauth)/onboarding'); // <-- Caminho real do arquivo
+      router.replace("/(unauth)/onboarding"); // <-- Caminho real do arquivo
     }, 3000); // 3 segundos
 
     return () => clearTimeout(timeout); // limpar timeout se o componente desmontar
   }, [router]);
-  
+
   return (
     <SafeAreaView style={styles.container}>
-      
-
       <View style={styles.centerContent}>
         <Image
           source={require("../../assets/animations/Logo.gif")}

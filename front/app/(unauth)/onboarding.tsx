@@ -17,7 +17,7 @@ export default function OnboardingScreen() {
 
   const handlePress = () => {
     if (index === pages.length - 1) {
-      router.replace("/profile");
+      router.replace("/login");
     } else {
       onboardingRef.current?.goNext();
     }
@@ -102,7 +102,7 @@ export default function OnboardingScreen() {
         style={styles.button}
       />
 
-      <TouchableOpacity onPress={() => router.replace("/profile")}>
+      <TouchableOpacity onPress={() => router.replace("/login")}>
         <Text style={styles.skipText}>Pular introdução</Text>
       </TouchableOpacity>
     </View>
@@ -128,7 +128,6 @@ const styles = StyleSheet.create({
     paddingBottom: 200,
     width: "45%",
     height: "100%",
-
   },
   image: {
     width: 80,
