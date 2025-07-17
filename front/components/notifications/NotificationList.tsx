@@ -4,9 +4,11 @@ import NotificationItem from "./NotificationItem";
 
 type NotificationListProps = {
     notifications: Notification[];
+    onDelete: (id: number) => void;
 };
 
-export default function NotificationList({ notifications }: NotificationListProps) {
+export default function NotificationList({ notifications, onDelete }: NotificationListProps) {
+
     return (
         <FlatList
             showsHorizontalScrollIndicator={false}
@@ -14,7 +16,10 @@ export default function NotificationList({ notifications }: NotificationListProp
             data={notifications}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
-                <NotificationItem notificationData={item} />
+                <NotificationItem
+                    notificationData={item}
+                    onDelete={() => onDelete(item.id)}
+                />
             )}
         />
     );

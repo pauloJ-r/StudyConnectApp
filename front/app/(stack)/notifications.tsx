@@ -3,37 +3,28 @@ import { Colors } from "@/constants/Colors";
 import { Notification } from "@/types/notification";
 import { Stack } from "expo-router";
 import { SafeAreaView, StyleSheet, View } from "react-native";
+import { useState } from "react";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 export default function NotificationsPage() {
-    const notifications: Notification[] = [
-        {
-            id: 1,
-            content: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsum repellat officiis, deleniti exercitationem molestiae, nihil nostrum alias aspernatur ab dolores natus asperiores rerum tenetur? Iste explicabo id praesentium dolorem maiores!',
-            isRead: false,
-            owner: {
-                id: 1,
-                name: 'Pedro Santiago',
-                email: 'pedro.santiago@example.com',
-                course: {name: 'TSI'},
-            },
-            createdAt: new Date().toString()
-        }
-    ];
+    const [notifications, setNotifications] = useState<Notification[]>([]);
+
+    const handleDelete = (id: number) => {
+        setNotifications(prev => prev.filter(item => item.id !== id));
+    };
 
     return (
         <>
-            <Stack.Screen
-                options={{
-                    title: 'Notificações'
-                }}
-            />
-
+            <Stack.Screen options={{ title: 'Notificações' }} />
             <SafeAreaView style={{ flex: 1 }}>
-
-                <View style={styles.container}>
-                    <NotificationList notifications={notifications} />
-                </View>
-
+                <GestureHandlerRootView style={{ flex: 1 }}>
+                    <View style={styles.container}>
+                        <NotificationList
+                            notifications={notifications}
+                            onDelete={handleDelete}
+                        />
+                    </View>
+                </GestureHandlerRootView>
             </SafeAreaView>
         </>
     );
