@@ -8,7 +8,7 @@ export default function NotificationsPage() {
     const notifications: Notification[] = [
         {
             id: 1,
-            content: 'Lorem ipsum dolor amet sit...',
+            content: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsum repellat officiis, deleniti exercitationem molestiae, nihil nostrum alias aspernatur ab dolores natus asperiores rerum tenetur? Iste explicabo id praesentium dolorem maiores!',
             isRead: false,
             owner: {
                 id: 1,
@@ -16,7 +16,7 @@ export default function NotificationsPage() {
                 email: 'pedro.santiago@example.com',
                 course: {name: 'TSI'},
             },
-            createdAt: Date.now().toString()
+            createdAt: new Date().toString()
         }
     ];
 
