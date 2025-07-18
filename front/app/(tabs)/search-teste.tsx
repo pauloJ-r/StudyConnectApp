@@ -1,3 +1,4 @@
+import { AddButton } from '@/components/AddButton';
 import AppHeaderBar from '@/components/AppHeaderBar';
 import SearchBar from '@/components/SearchBar';
 import { Colors } from '@/constants/Colors';
@@ -10,13 +11,14 @@ export default function SearchTesteScreen() {
          <AppHeaderBar/>
      <SearchBar />
     </View>
+    <AddButton />
     </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
-  container: {
+    container: {
     padding: 16,
     flex: 1,
     backgroundColor: Colors.light.background,
-  }
+  },
 });

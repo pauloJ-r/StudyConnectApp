@@ -9,7 +9,6 @@ import 'react-native-reanimated';
 export default function RootLayout() {
     useEffect(() => {
     async function setupNavBar() {
-      await NavigationBar.setBackgroundColorAsync("#ffffff"); 
       await NavigationBar.setButtonStyleAsync("dark"); 
     }
     setupNavBar();
@@ -33,6 +32,7 @@ export default function RootLayout() {
       <Stack initialRouteName="(unauth)">
         <Stack.Screen name="(unauth)" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="(create)" options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" />
       </Stack>
       <StatusBar barStyle="dark-content" backgroundColor="transparent" />
