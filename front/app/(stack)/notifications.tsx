@@ -5,6 +5,7 @@ import { Stack } from "expo-router";
 import { SafeAreaView, StyleSheet, View } from "react-native";
 import { useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import ClearNotificationsButton from "@/components/notifications/ClearNotificationsButton";
 
 export default function NotificationsPage() {
     const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -23,6 +24,7 @@ export default function NotificationsPage() {
                             notifications={notifications}
                             onDelete={handleDelete}
                         />
+                        <ClearNotificationsButton notifications={notifications} setNotificationsCb={setNotifications}/>
                     </View>
                 </GestureHandlerRootView>
             </SafeAreaView>
