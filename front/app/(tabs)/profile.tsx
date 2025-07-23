@@ -15,7 +15,7 @@ import JoinNewStudyGroupBalloon from "@/components/JoinNewStudyGroupBalloon";
 import { AddButton } from "@/components/AddButton";
 import ResponseItem from "@/components/AnswersItem"; // Import AnswerItem component
 
-import { getUserProfile, UserProfile } from "@/services/profileService";
+import { getUserProfile, UserProfile, getRelevantPostByUser, getRelevantComentarioByUser } from "@/services/profileService";
 
 // --- Início do Cálculo ---
 
@@ -42,6 +42,8 @@ export default function ProfilePage() {
     const [feedEntity, setFeedEntity] = useState(FeedEntity.Post);
 
     const [profileData, setProfileData] = useState<UserProfile | null>(null);
+    const [relevantPostData, setRelevantPostData] = useState<{ perguntasRelevantes: number }>({ perguntasRelevantes: 0});
+    const [relevantComentarioData, setRelevantComentarioData] = useState<{ respostasRelevantes: number }>({ respostasRelevantes: 0});
     const [loading, setLoading] = useState(true);
 
     function handleTabChange(tab: TabOption) {
@@ -56,6 +58,11 @@ export default function ProfilePage() {
       try {
         const data = await getUserProfile("68811f436c92232ca34eecb4"); // Coloque o ID do usuário real
         setProfileData(data);
+        const relevantPosts = await getRelevantPostByUser(data.id);
+        setRelevantPostData(relevantPosts);
+        const relevantComments = await getRelevantComentarioByUser(data.id);
+        setRelevantComentarioData(relevantComments);
+
       } catch (error) {
         console.error("Erro ao buscar perfil", error);
       } finally {
@@ -90,10 +97,10 @@ export default function ProfilePage() {
             <View style={styles.statsContainer}>
                 {/* 5. Aplique a largura calculada a cada item */}
                 <View style={{ width: itemWidth }}>
-                    <ProfileStats label="Perguntas Relevantes" value={12} />
+                    <ProfileStats label="Perguntas Relevantes" value={relevantPostData.perguntasRelevantes } />
                 </View>
                 <View style={{ width: itemWidth }}>
-                    <ProfileStats label="Respostas Relevantes" value={28} />
+                    <ProfileStats label="Respostas Relevantes" value={relevantComentarioData.respostasRelevantes} />
                 </View>
                 <View style={{ width: itemWidth }}>
                     <ProfileStats label="Troféus" value={36} />

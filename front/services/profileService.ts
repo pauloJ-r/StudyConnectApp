@@ -18,3 +18,12 @@ export async function getUserProfile(userId: string): Promise<UserProfile> {
   const response = await api.get(`/user/${userId}`);
   return response.data;
 }
+
+export async function getRelevantPostByUser(userId: string) {
+  const response = await api.get(`/posts/${userId}/relevantPost`);
+  return response.data;
+}
+export async function getRelevantComentarioByUser(userId: string) {
+  const response = await api.get(`/comentarios/${userId}/relevantComentario`);
+  return response.data;
+}

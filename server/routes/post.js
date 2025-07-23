@@ -32,7 +32,7 @@ router.get('/:postId/likes-count', postController.getLikesCount);
 router.get('/search', checkToken, postController.searchPosts);
 
 // Rpta para buscar posts relevantes
-router.get('/relevant', checkToken, postController.postsRelevantes);
+router.get('/:userId/relevantPost', postController.postsRelevantes);
 
 /* EXEMPLOS DE ROTAS PARA PESQUISA
 

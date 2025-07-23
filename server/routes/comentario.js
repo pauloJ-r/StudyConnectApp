@@ -21,4 +21,7 @@ router.put('/:comentarioId/like', checkToken, ComentarioController.toggleLike);
 // rota /comentarios/:comentarioId/likes-count          contabilizar quantos likes tem um comentario
 router.get('/:comentarioId/likes-count', ComentarioController.getLikesCount);
 
+// rota comentarios releventes
+router.get('/:userId/relevantComentario', ComentarioController.comentariosRelevantes);
+
 module.exports = router;
