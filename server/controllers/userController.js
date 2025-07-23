@@ -140,9 +140,9 @@ const upload = multer({ storage });
                 return res.status(400).json({ msg: 'Erro ao processar imagem' });
             }
 
-            const { name, email, password, confirmpassword } = req.body;
+            const { name, email, password, confirmpassword, course } = req.body;
 
-            if (!name || !email || !password || !confirmpassword) {
+            if (!name || !email || !password || !confirmpassword || !course) {
                 return res.status(422).json({ msg: 'Todos os campos são obrigatórios!' });
             }
             if (password !== confirmpassword) {
@@ -181,6 +181,7 @@ const upload = multer({ storage });
                 email,
                 password: passwordHash,
                 picturePath: pictureUrl || "",
+                course,
             });
 
             await user.save();

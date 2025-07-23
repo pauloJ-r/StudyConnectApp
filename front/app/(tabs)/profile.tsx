@@ -1,7 +1,7 @@
 import React from "react";
 // 1. Importe o Dimensions
-import { View, ScrollView, StyleSheet, Dimensions,SafeAreaView } from "react-native";
-import { useState } from "react";
+import { View, ScrollView, StyleSheet, Dimensions,SafeAreaView, ActivityIndicator } from "react-native";
+import { useState, useEffect } from "react";
 import { FeedEntity } from "@/types/feed_entity_enum";
 import BaseTabSwitcher from "@/components/BaseTabSwitcher";
 import TabSwitcherSelector from "@/components/TabSwitcherSelector";
@@ -14,6 +14,8 @@ import PostList from "@/components/PostList";
 import JoinNewStudyGroupBalloon from "@/components/JoinNewStudyGroupBalloon";
 import { AddButton } from "@/components/AddButton";
 import ResponseItem from "@/components/AnswersItem"; // Import AnswerItem component
+
+import { getUserProfile, UserProfile } from "@/services/profileService";
 
 // --- Início do Cálculo ---
 
@@ -39,20 +41,48 @@ export default function ProfilePage() {
     const [activeTab, setActiveTab] = useState<TabOption>('perguntas');
     const [feedEntity, setFeedEntity] = useState(FeedEntity.Post);
 
+    const [profileData, setProfileData] = useState<UserProfile | null>(null);
+    const [loading, setLoading] = useState(true);
+
     function handleTabChange(tab: TabOption) {
         setActiveTab(tab);
         if(tab === 'perguntas') setFeedEntity(FeedEntity.Post);
         else if(tab === 'respostas') setFeedEntity(FeedEntity.Group);
     }
+
+
+      useEffect(() => {
+    async function fetchProfile() {
+      try {
+        const data = await getUserProfile("68811f436c92232ca34eecb4"); // Coloque o ID do usuário real
+        setProfileData(data);
+      } catch (error) {
+        console.error("Erro ao buscar perfil", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchProfile();
+  }, []);
+
+    if (loading) {
+    return <ActivityIndicator style={{ flex: 1 }} size="large" />;
+  }
+
+  if (!profileData) return null;
+
     return (
         <SafeAreaView style={{ flex: 1 }}>
         <ScrollView style={styles.container}>
-            <HeaderProfile name="Pedro Santiago"
-            course="Sistema Para Internet"
-            badge="🟣 Colaborador Ativo"
-            description="Estudante apaixonado por tecnologia. Sempre disposto a ajudar colegas com dúvidas de programação."
+            <HeaderProfile 
+            name={profileData.name}
+            course= {profileData.course}
+            description= {profileData.bio}
+            picturePath={profileData.picturePath} // Passando picturePath para o HeaderProfile
             
-            
+            linkedin={profileData.linkedin} // Passando linkedin para o HeaderProfile
+            github={profileData.github} // Passando github para o HeaderProfile
             
             />
 
@@ -69,7 +99,7 @@ export default function ProfilePage() {
                     <ProfileStats label="Troféus" value={36} />
                 </View>
                 <View style={styles.grupos}>
-                    <ProfileStats label="Grupos" value={4} disabled />
+                    <ProfileStats label="Grupos" value={0} disabled />
                 </View>
             </View>
 

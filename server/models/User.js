@@ -39,6 +39,10 @@ const UserSchema = new mongoose.Schema({
         of: String,
         default: {},
     },
+    course: {
+        type: String,
+        required: true,
+    },
 });
 
 const User = mongoose.model('User', UserSchema);

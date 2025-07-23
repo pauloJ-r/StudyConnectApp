@@ -6,8 +6,6 @@ const cors = require('cors');
 const app = express();
 
 app.use(cors({
-    origin: 'https://study-connect-icje.vercel.app', // Permite apenas o domínio do front-end
-    credentials: true
 }));
 
 // Config JSON response
@@ -45,7 +43,7 @@ const dbPassword = process.env.DB_PASS;
 
 mongoose.connect(`mongodb+srv://${dbUser}:${dbPassword}@cluster0.4d7wmcf.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`)
     .then(() => {
-        app.listen(3000, () => {
+        app.listen(3000, '0.0.0.0', () => {
             console.log('Conectado ao banco!');
         });
     })
