@@ -31,6 +31,9 @@ router.get('/:postId/likes-count', postController.getLikesCount);
 // Rota para pesquisar posts
 router.get('/search', checkToken, postController.searchPosts);
 
+// Rpta para buscar posts relevantes
+router.get('/relevant', checkToken, postController.postsRelevantes);
+
 /* EXEMPLOS DE ROTAS PARA PESQUISA
 
 Buscar posts com a tag javascript:

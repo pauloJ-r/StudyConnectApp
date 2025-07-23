@@ -2,6 +2,7 @@
 import api from './api';
 
 export interface UserProfile {
+    id: string;
   name: string;
   course: string;
   badge: string;
@@ -9,6 +10,7 @@ export interface UserProfile {
   github: string;
   linkedin: string;
     picturePath: string;
+    email: string;
   // adicione mais campos conforme a resposta da API
 }
 

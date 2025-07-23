@@ -1,7 +1,10 @@
 const Comentario = require('../models/comentario');
 
+
+class ComentarioController {
+
 // Função para criar um novo comentário
-exports.createComentario = async (req, res) => {
+async createComentario(req, res) {
     const { texto, userId, postId } = req.body;
     try {
         const comentario = await Comentario.create({ texto, userId, postId });
@@ -12,7 +15,7 @@ exports.createComentario = async (req, res) => {
 };
 
 // Função para buscar todos os comentários de um post
-exports.getComentariosByPost = async (req, res) => {
+async getComentariosByPost(req, res) {
     const { postId } = req.params;
     try {
         const comentarios = await Comentario.find({ postId }).populate('userId', '-password');
@@ -23,7 +26,7 @@ exports.getComentariosByPost = async (req, res) => {
 };
 
 // Função para buscar todos os comentários de um usuário
-exports.getComentariosByUser = async (req, res) => {
+async getComentariosByUser(req, res) {
     const { userId } = req.params;
     try {
         const comentarios = await Comentario.find({ userId }).populate('postId');
@@ -34,7 +37,7 @@ exports.getComentariosByUser = async (req, res) => {
 };
 
 // Função para remover um comentário
-exports.removeComentario = async (req, res) => {
+async removeComentario(req, res) {
     const { id } = req.params;
     try {
         const comentario = await Comentario.findByIdAndDelete(id);
@@ -49,7 +52,7 @@ exports.removeComentario = async (req, res) => {
 
 
 // Adicionar ou remover um like
-exports.toggleLike = async (req, res) => {
+async toggleLike(req, res){
     try {
         const { comentarioId } = req.params;
         const userId = req.user.id; // Supondo que você tenha middleware de autenticação que adiciona `req.user`
@@ -82,7 +85,7 @@ exports.toggleLike = async (req, res) => {
 
 
 // Obter a quantidade de likes de um comentario
-exports.getLikesCount = async (req, res) => {
+async getLikesCount(req, res){
     try {
         const { comentarioId } = req.params;
 
@@ -97,3 +100,26 @@ exports.getLikesCount = async (req, res) => {
         res.status(500).json({ message: 'Erro ao obter a quantidade de likes', error: error.message });
     }
 };
+async comentariosRelevantes(req, res) {
+    const userId = req.params.id;
+
+  try {
+    // Contar comentários relevantes (mais de 10 likes)
+    const respostasRelevantes = await Comentario.countDocuments({
+      userId: userId,
+      $expr: { $gt: [{ $size: "$likes" }, 10] }
+    });
+
+    return res.status(200).json({
+      respostasRelevantes
+    });
+  } catch (error) {
+    console.error("Erro ao buscar dados relevantes:", error);
+    return res.status(500).json({ message: "Erro interno do servidor" });
+  }
+}
+
+
+}
+
+module.exports = new ComentarioController();
