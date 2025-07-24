@@ -1,4 +1,5 @@
 const Comentario = require('../models/comentario');
+const { updateUserBadges } = require('../controllers/badgeController');
 
 
 class ComentarioController {
@@ -74,6 +75,8 @@ async toggleLike(req, res){
         }
 
         await comentario.save();
+        await updateUserBadges(comentarioId, "comentario");
+
 
         res.status(200).json({ message: 'Like atualizado com sucesso', likes: comentario.likes });
     } catch (error) {

@@ -27,3 +27,13 @@ export async function getRelevantComentarioByUser(userId: string) {
   const response = await api.get(`/comentarios/${userId}/relevantComentario`);
   return response.data;
 }
+
+export async function getUserBadges(userId: string) {
+  const response = await api.get(`/user/${userId}/badges`);
+  return response.data;
+}
+
+export async function getUserBadgesCount(userId: string) {
+  const response = await api.get(`/user/${userId}/badges/count`);
+  return response.data;
+}

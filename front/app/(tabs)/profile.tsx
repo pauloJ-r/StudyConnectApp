@@ -15,7 +15,7 @@ import JoinNewStudyGroupBalloon from "@/components/JoinNewStudyGroupBalloon";
 import { AddButton } from "@/components/AddButton";
 import ResponseItem from "@/components/AnswersItem"; // Import AnswerItem component
 
-import { getUserProfile, UserProfile, getRelevantPostByUser, getRelevantComentarioByUser } from "@/services/profileService";
+import { getUserProfile, UserProfile, getRelevantPostByUser, getRelevantComentarioByUser, getUserBadgesCount } from "@/services/profileService";
 
 // --- Início do Cálculo ---
 
@@ -44,6 +44,7 @@ export default function ProfilePage() {
     const [profileData, setProfileData] = useState<UserProfile | null>(null);
     const [relevantPostData, setRelevantPostData] = useState<{ perguntasRelevantes: number }>({ perguntasRelevantes: 0});
     const [relevantComentarioData, setRelevantComentarioData] = useState<{ respostasRelevantes: number }>({ respostasRelevantes: 0});
+    const [Badges, setBadges] = useState({totalBadges: 0}); 
     const [loading, setLoading] = useState(true);
 
     function handleTabChange(tab: TabOption) {
@@ -56,12 +57,33 @@ export default function ProfilePage() {
       useEffect(() => {
     async function fetchProfile() {
       try {
+
+
         const data = await getUserProfile("68811f436c92232ca34eecb4"); // Coloque o ID do usuário real
         setProfileData(data);
+        try {
+        // Buscando os posts relevantes do usuário
         const relevantPosts = await getRelevantPostByUser(data.id);
         setRelevantPostData(relevantPosts);
+        } catch (error) {
+          console.error("Erro ao buscar posts relevantes", error);
+        }
+
+        try {
+        // Buscando os comentários relevantes do usuário
         const relevantComments = await getRelevantComentarioByUser(data.id);
         setRelevantComentarioData(relevantComments);
+        } catch (error) {
+          console.error("Erro ao buscar comentários relevantes", error);
+        }
+
+        try {
+        // Buscando os badges do usuário
+        const userBadgesCount = await getUserBadgesCount("68811f436c92232ca34eecb4");
+        setBadges(userBadgesCount); // Supondo que a resposta tenha um campo 'count'
+        } catch (error) {
+          console.error("Erro ao buscar badges do usuário", error);
+        }
 
       } catch (error) {
         console.error("Erro ao buscar perfil", error);
@@ -103,7 +125,7 @@ export default function ProfilePage() {
                     <ProfileStats label="Respostas Relevantes" value={relevantComentarioData.respostasRelevantes} />
                 </View>
                 <View style={{ width: itemWidth }}>
-                    <ProfileStats label="Troféus" value={36} />
+                    <ProfileStats label="Troféus" value={Badges.totalBadges} />
                 </View>
                 <View style={styles.grupos}>
                     <ProfileStats label="Grupos" value={0} disabled />

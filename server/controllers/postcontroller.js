@@ -121,7 +121,8 @@ async toggleLike(req, res) {
 
         await post.save();
 
-        await updateUserBadges(postId);
+        await updateUserBadges(postId, "post");
+
 
         res.status(200).json({ message: 'Like atualizado com sucesso', likes: post.likes });
     } catch (error) {
