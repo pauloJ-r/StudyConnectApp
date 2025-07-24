@@ -5,29 +5,30 @@ import { Colors } from "@/constants/Colors";
 type HeaderProfileProps = {
   name: string;
   course: string;
-  badge: string;
   description: string;
+  picturePath?: string; // Adicionei picturePath para a imagem do perfil
+  linkedin?: string;
+  github?: string;
 };
 
 
 
-export function HeaderProfile({name,course,badge,description}: HeaderProfileProps) {
+export function HeaderProfile({name,course,description,picturePath,linkedin,github}: HeaderProfileProps) {
 return (
     <View style={styles.container}>
       <Image
-        source={{ uri: 'https://i.pravatar.cc/150?img=3' }}
+        source={{ uri: picturePath }} // Use uma imagem padrão se picturePath não estiver disponível
         style={styles.avatar}
       />
       <Text style={styles.name}>{name}</Text>
       <Text style={styles.course}>{course}</Text>
-      <Text style={styles.badge}>{badge}</Text>
       <Text style={styles.description}>{description}</Text>
       <View style={styles.socialButtons}>
 
-        <TouchableOpacity style={styles.button} onPress={() => Linking.openURL('github.com')}>
+        <TouchableOpacity style={styles.button} onPress={() => Linking.openURL(github || 'https://github.com')}>
           <Text style={styles.text}>GitHub</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={() => Linking.openURL('linkedin.com')}>
+        <TouchableOpacity style={styles.button} onPress={() => Linking.openURL(linkedin || 'https://linkedin.com')}>
           <Text style={styles.text}>LinkedIn</Text>
         </TouchableOpacity>
 
