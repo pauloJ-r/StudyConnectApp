@@ -3,55 +3,22 @@ import Input from "@/components/Input";
 import { AppButton } from "@/components/Button";
 import { useRouter } from "expo-router";
 import { useState } from "react";
+import useAuth from "@/services/useAuth";
 
 export default function SignupForm() {
+  const { register } = useAuth();
   const router = useRouter();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [course, setCourse] = useState(""); // se for ignorado no backend, tudo bem
+  const [course, setCourse] = useState("");
   const [password, setPassword] = useState("");
   const [confirmpassword, setConfirmPassword] = useState("");
-  /*  const [picture, setPicture] = useState({
-    uri: "file:///path/to/photo.jpg",
-    name: "photo.jpg",
-    type: "image/jpeg",
-  }); */
-  const [picture, setPicture] = useState<null | {
-    uri: string;
-    name: string;
-    type: string;
-  }>(null);
+  const [picture, setPicture] = useState(null);
 
   const handleRegister = async () => {
-    const formData = new FormData();
-    formData.append("name", name);
-    formData.append("email", email);
-    formData.append("password", password);
-    formData.append("confirmpassword", confirmpassword);
-
-    // Só adiciona o picture se existir
-    if (picture) {
-      formData.append("picture", {
-        uri: picture.uri,
-        name: picture.name || "profile.jpg",
-        type: picture.type || "image/jpeg",
-      } as any);
-    }
-
     try {
-      const response = await fetch("http://localhost:3000/auth/register", {
-        method: "POST",
-        body: formData,
-      });
-
-      const result = await response.json();
-
-      console.log(result);
-      if (!response.ok) {
-        throw new Error(result.message || "Erro no cadastro");
-      }
-
+      await register({ name, email, password, confirmpassword, picture });
       Alert.alert("Sucesso", "Cadastro realizado com sucesso!");
       router.replace("/login");
     } catch (error: any) {
