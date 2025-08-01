@@ -7,7 +7,7 @@ const { updateUserBadges } = require('../controllers/badgeController');
 exports.createPost = async (req, res) => {
     const { titulo, texto, userId } = req.body;
     try {
-        const post = await Post.create({ titulo, texto, userId});
+        const post = await Post.create({ titulo, texto, userId });
         res.status(201).json(post);
     } catch (error) {
         console.error('Erro ao criar o post:', error);
@@ -18,7 +18,10 @@ exports.createPost = async (req, res) => {
 // Buscar todos os posts
 exports.getPosts = async (req, res) => {
     try {
-        const posts = await Post.find().populate('userId', '-password');
+        const offset = parseInt(req.params.offset);
+        const limit = parseInt(req.params.limit);
+
+        const posts = await Post.find().skip(offset).limit(limit).populate('userId', '-password');
         res.status(200).json(posts);
     } catch (error) {
         console.error('Erro ao buscar os posts:', error);
