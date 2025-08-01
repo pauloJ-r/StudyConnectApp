@@ -20,7 +20,6 @@ const TrophyPage = () => {
     <ScrollView contentContainerStyle={styles.container}>
             <HeaderProfile name="Pedro Santiago"
             course="Sistema Para Internet"
-            badge="🟣 Colaborador Ativo"
             description="Estudante apaixonado por tecnologia. Sempre disposto a ajudar colegas com dúvidas de programação."
             
             

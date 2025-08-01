@@ -35,7 +35,7 @@ const UserSchema = new mongoose.Schema({
         default: "",
     },
     badges: {
-        type: Map, // Chave: tag, Valor: nível da insignia (bronze, prata, ouro)
+        type: Map, 
         of: String,
         default: {},
     },

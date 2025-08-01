@@ -55,45 +55,43 @@ export default function ProfilePage() {
 
 
       useEffect(() => {
-    async function fetchProfile() {
-      try {
-
-
-        const data = await getUserProfile("68811f436c92232ca34eecb4"); // Coloque o ID do usuário real
-        setProfileData(data);
+    async function fetchProfileData() {
+        // Use uma constante para o ID para evitar repetição
+        const userId = "68811f436c92232ca34eecb4"; 
+        
         try {
-        // Buscando os posts relevantes do usuário
-        const relevantPosts = await getRelevantPostByUser(data.id);
-        setRelevantPostData(relevantPosts);
-        } catch (error) {
-          console.error("Erro ao buscar posts relevantes", error);
-        }
+            // A primeira chamada ainda é separada, pois as outras dependem do 'id' dela
+            // (Assumindo que o ID pode ser diferente do 'userId' inicial)
+            const profile = await getUserProfile(userId);
+            setProfileData(profile);
 
-        try {
-        // Buscando os comentários relevantes do usuário
-        const relevantComments = await getRelevantComentarioByUser(data.id);
-        setRelevantComentarioData(relevantComments);
-        } catch (error) {
-          console.error("Erro ao buscar comentários relevantes", error);
-        }
+            // Agora, execute as outras chamadas em paralelo
+            const [
+                postsData,
+                commentsData,
+                badgesData
+            ] = await Promise.all([
+                getRelevantPostByUser(profile.id),
+                getRelevantComentarioByUser(profile.id),
+                getUserBadgesCount('68811f436c92232ca34eecb4') // Use o mesmo ID para consistência
+            ]);
 
-        try {
-        // Buscando os badges do usuário
-        const userBadgesCount = await getUserBadgesCount("68811f436c92232ca34eecb4");
-        setBadges(userBadgesCount); // Supondo que a resposta tenha um campo 'count'
-        } catch (error) {
-          console.error("Erro ao buscar badges do usuário", error);
-        }
+            // Atualize os states com os resultados
+            setRelevantPostData(postsData);
+            setRelevantComentarioData(commentsData);
+            setBadges(badgesData);
 
-      } catch (error) {
-        console.error("Erro ao buscar perfil", error);
-      } finally {
-        setLoading(false);
-      }
+        } catch (error) {
+            console.error("Ocorreu um erro ao buscar os dados do perfil:", error);
+            // Opcional: Adicionar um state de erro para mostrar uma mensagem na tela
+            // setErrorState(true); 
+        } finally {
+            setLoading(false);
+        }
     }
 
-    fetchProfile();
-  }, []);
+    fetchProfileData();
+}, []); // O array de dependências vazio está correto
 
     if (loading) {
     return <ActivityIndicator style={{ flex: 1 }} size="large" />;

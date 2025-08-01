@@ -37,3 +37,8 @@ export async function getUserBadgesCount(userId: string) {
   const response = await api.get(`/user/${userId}/badges/count`);
   return response.data;
 }
+
+export async function getRelevantAnswersByUser(userId: string) {
+  const response = await api.get(`/comentarios/${userId}/relevantComentario`);
+  return response.data;
+}

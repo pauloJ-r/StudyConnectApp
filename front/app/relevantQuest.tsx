@@ -11,13 +11,12 @@ import { mockPosts, mockIndexableStudyGroups } from "../mock/homescreen";
 
 
 
-const TrophyPage = () => {
+const RelevantQuestPage = () => {
   return (
     <SafeAreaView>
     <ScrollView contentContainerStyle={styles.container}>
             <HeaderProfile name="Pedro Santiago"
             course="Sistema Para Internet"
-            badge="🟣 Colaborador Ativo"
             description="Estudante apaixonado por tecnologia. Sempre disposto a ajudar colegas com dúvidas de programação."
             
             
@@ -49,4 +48,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TrophyPage;
+export default RelevantQuestPage;
