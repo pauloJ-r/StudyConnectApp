@@ -5,7 +5,7 @@ export interface PostTag {
 };
 
 export interface Comment {
-    id: number;
+    id: string;
     text: string;
     post: Post;
     owner: User;
@@ -13,15 +13,27 @@ export interface Comment {
     createdAt: string;
 };
 
+export interface PostAuthor {
+  _id: string;
+  id: string;
+  name: string;
+    email: string;
+    course: string;
+  picturePath: string;
+  // adicione outros campos se precisar
+}
+
 export interface Post {
-    id: number,
-    title: string;
-    text: string;
-    contextText?: string;
-    owner: User;
-    likes: number;
-    comments?: Comment[];
-    tags: PostTag[];
-    createdAt: string
-    updatedAt: string | null;
-};
+  _id: string; // <-- A chave é _id
+  titulo: string;
+  texto: string;
+  userId: PostAuthor | null;
+  likes: any[]; // É um array, a contagem será o .length
+  tags: string[]; // Assumindo que seja um array de strings
+    comments?: any[];
+  createdAt: string;
+  updatedAt: string;
+}
+export interface UserBadge {
+    label: string;
+}

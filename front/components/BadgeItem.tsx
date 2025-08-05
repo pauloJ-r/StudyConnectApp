@@ -9,7 +9,7 @@ export default function BadgeItem({badgeData}: BadgeItemProps) {
     return (
         <View style={styles.container}>
             <Text style={styles.badgeInfoText}>
-                {badgeData.name}
+                {badgeData.tag}
             </Text>
         </View>
     );

@@ -1,20 +1,19 @@
 export interface UserBadge {
-    name: string;
+  tag: string;
+  count: string; 
 };
 
 export interface UserSocialLink {
     url: string
 };
 
-export interface Course {
-    name: string;
-};
+
 
 export interface User {
-    id: number;
+    id: string;
     name: string;
     email: string;
-    course: Course; //Temporary.
+    course: string; //Temporary.
     picturePath?: string;
     bio?: string;
     github?: UserSocialLink;

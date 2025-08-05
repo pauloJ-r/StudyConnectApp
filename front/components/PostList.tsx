@@ -16,7 +16,7 @@ function EmptyPostMessage() {
     );
 }
 
-export default function PostList({ posts }: PostListProps) {
+export default function PostList({ posts = [] }: PostListProps) {
     return (
         <FlatList
             contentContainerStyle={{ marginBottom: 100 }}
@@ -24,7 +24,7 @@ export default function PostList({ posts }: PostListProps) {
             showsVerticalScrollIndicator={false}
             ListEmptyComponent={<EmptyPostMessage />}
             data={posts}
-            keyExtractor={(item) => item.id.toString()}
+            keyExtractor={(item, index) => item?._id ?? index.toString()}
             renderItem={({ item }) => (
                 <PostItem postData={item} />
             )}
