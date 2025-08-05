@@ -24,7 +24,7 @@ class UserController {
     };
     async updateUser(req, res) {
         const id = req.params.id;
-    const { name, bio, github, linkedin } = req.body;
+    const { name, bio, github, linkedin, course } = req.body;
     const picturePath = req.file ? req.file.path : null; // Obtém o caminho do arquivo
 
     // Verifique se o ID é válido
@@ -42,6 +42,7 @@ class UserController {
         // Cria um objeto de atualização
         const updateFields = {
             name,
+            course: course || user.course, // Use o curso existente se nenhum novo curso for enviado
             bio: bio || user.bio,
             picturePath: picturePath || user.picturePath // Use a imagem existente se nenhuma nova imagem for enviada
         };

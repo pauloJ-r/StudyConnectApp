@@ -57,3 +57,8 @@ export async function getAnswersByUserId(userId: string) {
   const response = await api.get(`/comentarios/user/${userId}`);
   return response.data;
 }
+
+export async function updateUserProfile(userId: string, profileData: Partial<UserProfile>): Promise<UserProfile> {
+    const response = await api.put(`/user/${userId}`, profileData);
+    return response.data;
+}
