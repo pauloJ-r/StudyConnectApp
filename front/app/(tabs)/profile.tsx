@@ -1,129 +1,114 @@
-import React from "react";
-// 1. Importe o Dimensions
-import { View, ScrollView, StyleSheet, Dimensions,SafeAreaView, ActivityIndicator } from "react-native";
-import { useState, useEffect } from "react";
-import { FeedEntity } from "@/types/feed_entity_enum";
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet, Dimensions, SafeAreaView, ActivityIndicator, Text, FlatList } from "react-native";
+
 import BaseTabSwitcher from "@/components/BaseTabSwitcher";
 import TabSwitcherSelector from "@/components/TabSwitcherSelector";
 import { HeaderProfile } from "@/components/HeaderProfile";
 import { ProfileStats } from "@/components/ProfileStats";
-import { TabSwitcher } from "@/components/TabSwitcher";
-import { mockPosts, mockIndexableStudyGroups } from "../../mock/homescreen";
-import GroupList from "@/components/GroupList";
-import PostList from "@/components/PostList";
-import JoinNewStudyGroupBalloon from "@/components/JoinNewStudyGroupBalloon";
 import { AddButton } from "@/components/AddButton";
-import ResponseItem from "@/components/AnswersItem"; // Import AnswerItem component
+import ResponseItem from "@/components/AnswersItem";
+import PostItem from '@/components/PostItem'; // Importe o PostItem
 
-import { getUserProfile, UserProfile, getRelevantPostByUser, getRelevantComentarioByUser, getUserBadgesCount } from "@/services/profileService";
+// Importe suas funções e tipos
+import { getUserProfile, getPostsByUserId, getAnswersByUserId, getUserBadgesCount } from "@/services/profileService";
+import type { UserProfile} from "@/services/profileService";
+import type { Post, Comment } from "@/types/post";
 
-// --- Início do Cálculo ---
-
-// 2. Defina suas constantes de espaçamento
+// ... seu código de cálculo de dimensões ...
 const PADDING_CONTAINER = 16;
 const GAP_ENTRE_ITENS = 16;
 const NUM_COLUNAS = 2;
-
-// 3. Calcule a largura disponível
 const screenWidth = Dimensions.get('window').width;
 const availableWidth = screenWidth - (PADDING_CONTAINER * 2) - (GAP_ENTRE_ITENS * (NUM_COLUNAS - 1));
-
-// 4. Calcule a largura de cada item
 const itemWidth = availableWidth / NUM_COLUNAS;
 
-// --- Fim do Cálculo ---
+/*
+  Lembre-se de definir 'Post' e 'Answer' no seu arquivo de tipos central
+  (ex: src/types/index.ts)
+
+  export interface Post { id: number | string; ...outras props }
+  export interface Answer { id: number | string; text: string; countLikes: number; }
+*/
 
 type TabOption = 'perguntas' | 'respostas';
 
 export default function ProfilePage() {
-
-    // States.
     const [activeTab, setActiveTab] = useState<TabOption>('perguntas');
-    const [feedEntity, setFeedEntity] = useState(FeedEntity.Post);
-
+    
+    // Estados para os dados
     const [profileData, setProfileData] = useState<UserProfile | null>(null);
-    const [relevantPostData, setRelevantPostData] = useState<{ perguntasRelevantes: number }>({ perguntasRelevantes: 0});
-    const [relevantComentarioData, setRelevantComentarioData] = useState<{ respostasRelevantes: number }>({ respostasRelevantes: 0});
-    const [Badges, setBadges] = useState({totalBadges: 0}); 
+    const [stats, setStats] = useState({ perguntas: 0, respostas: 0, trofeus: 0 });
+    const [posts, setPosts] = useState<Post[]>([]);
+    const [answers, setAnswers] = useState<Comment[]>([]);
+    
+    // Estados de controle
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-    function handleTabChange(tab: TabOption) {
-        setActiveTab(tab);
-        if(tab === 'perguntas') setFeedEntity(FeedEntity.Post);
-        else if(tab === 'respostas') setFeedEntity(FeedEntity.Group);
-    }
+    useEffect(() => {
+        const fetchProfileData = async () => {
+            const userId = "68811f436c92232ca34eecb4";
+            try {
+                // Busca tudo em paralelo para máxima performance
+                const [
+                    profile,
+                    userPosts,
+                    userAnswers,
+                    badgesData
+                ] = await Promise.all([
+                    getUserProfile(userId),
+                    getPostsByUserId(userId),        // <- Use sua função real aqui!
+                    getAnswersByUserId(userId),      // <- Use sua função real aqui!
+                    getUserBadgesCount(userId)
+                ]);
 
 
-      useEffect(() => {
-    async function fetchProfileData() {
-        // Use uma constante para o ID para evitar repetição
-        const userId = "68811f436c92232ca34eecb4"; 
-        
-        try {
-            // A primeira chamada ainda é separada, pois as outras dependem do 'id' dela
-            // (Assumindo que o ID pode ser diferente do 'userId' inicial)
-            const profile = await getUserProfile(userId);
-            setProfileData(profile);
 
-            // Agora, execute as outras chamadas em paralelo
-            const [
-                postsData,
-                commentsData,
-                badgesData
-            ] = await Promise.all([
-                getRelevantPostByUser(profile.id),
-                getRelevantComentarioByUser(profile.id),
-                getUserBadgesCount('68811f436c92232ca34eecb4') // Use o mesmo ID para consistência
-            ]);
 
-            // Atualize os states com os resultados
-            setRelevantPostData(postsData);
-            setRelevantComentarioData(commentsData);
-            setBadges(badgesData);
+                // Atualiza os states com os resultados
+                setProfileData(profile);
+                setPosts(userPosts);
+                setAnswers(userAnswers);
+                // Assume que badgesData tem a contagem de troféus, e as listas têm o 'length' para as contagens
+                setStats({
+                    perguntas: userPosts.length,
+                    respostas: userAnswers.length,
+                    trofeus: badgesData.totalBadges 
+                });
 
-        } catch (error) {
-            console.error("Ocorreu um erro ao buscar os dados do perfil:", error);
-            // Opcional: Adicionar um state de erro para mostrar uma mensagem na tela
-            // setErrorState(true); 
-        } finally {
-            setLoading(false);
-        }
-    }
+            } catch (err) {
+                console.error("Ocorreu um erro ao buscar os dados do perfil:", err);
+                setError("Não foi possível carregar o perfil.");
+            } finally {
+                setLoading(false);
+            }
+        };
 
-    fetchProfileData();
-}, []); // O array de dependências vazio está correto
+        fetchProfileData();
+    }, []);
 
-    if (loading) {
-    return <ActivityIndicator style={{ flex: 1 }} size="large" />;
-  }
+    const renderPageHeader = () => (
+        <>
+            {profileData && (
+                <HeaderProfile
+                    name={profileData.name}
+                    course={profileData.course}
+                    description={profileData.bio}
+                    picturePath={profileData.picturePath}
+                    linkedin={profileData.linkedin}
+                    github={profileData.github}
+                />
+            )}
 
-  if (!profileData) return null;
-
-    return (
-        <SafeAreaView style={{ flex: 1 }}>
-        <ScrollView style={styles.container}>
-            <HeaderProfile 
-            name={profileData.name}
-            course= {profileData.course}
-            description= {profileData.bio}
-            picturePath={profileData.picturePath} // Passando picturePath para o HeaderProfile
-            
-            linkedin={profileData.linkedin} // Passando linkedin para o HeaderProfile
-            github={profileData.github} // Passando github para o HeaderProfile
-            
-            />
-
-            {/* O statsContainer agora só precisa do wrap e do gap */}
             <View style={styles.statsContainer}>
-                {/* 5. Aplique a largura calculada a cada item */}
                 <View style={{ width: itemWidth }}>
-                    <ProfileStats label="Perguntas Relevantes" value={relevantPostData.perguntasRelevantes } />
+                    <ProfileStats label="Perguntas" value={stats.perguntas} />
                 </View>
                 <View style={{ width: itemWidth }}>
-                    <ProfileStats label="Respostas Relevantes" value={relevantComentarioData.respostasRelevantes} />
+                    <ProfileStats label="Respostas" value={stats.respostas} />
                 </View>
                 <View style={{ width: itemWidth }}>
-                    <ProfileStats label="Troféus" value={Badges.totalBadges} />
+                    <ProfileStats label="Troféus" value={stats.trofeus} />
                 </View>
                 <View style={styles.grupos}>
                     <ProfileStats label="Grupos" value={0} disabled />
@@ -131,67 +116,69 @@ export default function ProfilePage() {
             </View>
 
             <View style={styles.switcherContainer}>
-                <BaseTabSwitcher > 
+                <BaseTabSwitcher>
                     <TabSwitcherSelector
                         text="Perguntas"
                         isActive={activeTab === 'perguntas'}
-                        onTabPress={() => handleTabChange('perguntas')}
+                        onTabPress={() => setActiveTab('perguntas')}
                     />
                     <TabSwitcherSelector
                         text="Respostas"
                         isActive={activeTab === 'respostas'}
-                        onTabPress={() => handleTabChange('respostas')}
+                        onTabPress={() => setActiveTab('respostas')}
                     />
                 </BaseTabSwitcher>
-
-                <View>
-                           {activeTab === 'perguntas' && <PostList posts={mockPosts}/>}
-                 
-                           {/* Grupos. */}
-                           {activeTab === 'respostas' && 
-                           <View style={{ paddingTop: 10 }}>
-                                <ResponseItem text = "sua pergunta é bem interessante, vc pode tentar de tal forma"
-                                    countLikes={10} 
-                                />
-                                <ResponseItem text = "desse jeito não é o melhor caminho"
-                                    countLikes={5}
-                                />
-                                <ResponseItem text = "assim fica melhor"
-                                    countLikes={3}
-                                />
-                                <ResponseItem text = "fizeram esta mesma pergunta no post anterior talvez lhe ajude"
-                                    countLikes={2}
-                                />
-                           </View>}
-                </View>
             </View>
+        </>
+    );
 
+    if (loading) {
+        return <ActivityIndicator style={styles.centered} size="large" />;
+    }
+
+    if (error) {
+        return <View style={styles.centered}><Text>{error}</Text></View>;
+    }
+
+    return (
+        <SafeAreaView style={styles.safeArea}>
+{activeTab === 'perguntas' && (
+    <FlatList
+        data={posts}
+
+        // 1. CORREÇÃO DO KEY EXTRACTOR: Use a chave correta "_id"
+        keyExtractor={(item) => item._id}
+
+        // 2. CORREÇÃO DAS PROPS NO RENDERITEM: Mapeie os dados da API
+renderItem={({ item }) => <PostItem postData={item} />}
+        
+        ListHeaderComponent={renderPageHeader}
+        contentContainerStyle={styles.listContent}
+        ListEmptyComponent={<View style={styles.centered}><Text>Nenhuma pergunta encontrada.</Text></View>}
+    />
+)}
+
+            {activeTab === 'respostas' && (
+                <FlatList
+                    data={answers}
+                    renderItem={({ item }) => <ResponseItem {...item} />}
+                    keyExtractor={(item) => item.id.toString()}
+                    ListHeaderComponent={renderPageHeader}
+                    contentContainerStyle={styles.listContent}
+                    ListEmptyComponent={<View style={styles.centered}><Text>Nenhuma resposta encontrada.</Text></View>}
+                />
+            )}
             
-        </ScrollView>
-        <AddButton />
+            <AddButton />
         </SafeAreaView>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        padding: PADDING_CONTAINER, // Use a constante aqui
-        backgroundColor: '#E7E7E7',
-        flex: 1,
-    },
-    switcherContainer: {
-        alignItems: 'center',
-    },
-    statsContainer: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        gap: GAP_ENTRE_ITENS, // Use a constante aqui também
-        marginBottom: 24,
-        marginTop: 16,
-        // justifyContent: 'space-between' não é mais necessário com gap
-    },
-    grupos: {
-        width: itemWidth, 
-        
-    },
+    safeArea: { flex: 1, backgroundColor: '#E7E7E7' },
+    listContent: { padding: PADDING_CONTAINER, paddingBottom: 80 },
+    centered: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 },
+    switcherContainer: { alignItems: 'center', marginBottom: 10 },
+    statsContainer: { flexDirection: 'row', flexWrap: 'wrap', gap: GAP_ENTRE_ITENS, marginBottom: 24, marginTop: 16 },
+    grupos: { width: itemWidth },
 });

@@ -20,7 +20,7 @@ export default function PostUserCard({userData}: PostUserCardProps) {
                     {userData.name}
                 </Text>
                 <Text style={styles.userInfoNameCourse}>
-                    {userData.course.name}
+                    {userData.course}
                 </Text>
             </View>
         </View>

@@ -28,7 +28,7 @@ export async function getRelevantComentarioByUser(userId: string) {
   return response.data;
 }
 
-export async function getUserBadges(userId: string) {
+export async function getUserTrophies(userId: string) {
   const response = await api.get(`/user/${userId}/badges`);
   return response.data;
 }
@@ -40,5 +40,20 @@ export async function getUserBadgesCount(userId: string) {
 
 export async function getRelevantAnswersByUser(userId: string) {
   const response = await api.get(`/comentarios/${userId}/relevantComentario`);
+  return response.data;
+}
+
+export async function getRelevantPostsByUser(userId: string) {
+  const response = await api.get(`/posts/${userId}/relevantPost`);
+  return response.data;
+}
+
+export async function getPostsByUserId(userId: string) {
+  const response = await api.get(`/posts/user/${userId}`);
+  return response.data;
+}
+
+export async function getAnswersByUserId(userId: string) {
+  const response = await api.get(`/comentarios/user/${userId}`);
   return response.data;
 }
