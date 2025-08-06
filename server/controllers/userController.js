@@ -7,6 +7,7 @@ const bcrypt = require('bcrypt');
 const multer = require('multer');
 const bucket = require('../config/firebaseConfig');
 const { v4: uuidv4 } = require('uuid');
+const upload = require('../config/multer'); // Importando o middleware de upload
 
 
 
@@ -23,56 +24,75 @@ class UserController {
         }
     };
     async updateUser(req, res) {
-        const id = req.params.id;
-    const { name, bio, github, linkedin } = req.body;
-    const picturePath = req.file ? req.file.path : null; // Obtém o caminho do arquivo
-
-    // Verifique se o ID é válido
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(400).json({ msg: 'ID inválido' });
-    }
-
-    try {
-        // Primeiro, encontre o usuário para obter o caminho atual da imagem
-        const user = await User.findById(id);
-        if (!user) {
-            return res.status(404).json({ msg: 'Usuário não encontrado' });
+    // -> NOVO: Usamos o padrão do 'register' para lidar com o upload
+    // Note que usamos 'profileImage', que é o nome do campo que o frontend envia
+    upload.single('profileImage')(req, res, async function (err) {
+        if (err) {
+            return res.status(400).json({ msg: 'Erro ao processar imagem', error: err.message });
         }
 
-        // Cria um objeto de atualização
-        const updateFields = {
-            name,
-            bio: bio || user.bio,
-            picturePath: picturePath || user.picturePath // Use a imagem existente se nenhuma nova imagem for enviada
-        };
+        try {
+            const id = req.params.id;
+            const { name, bio, github, linkedin, course } = req.body;
 
-        // Se `github` for vazio, remova o campo, senão atualize com o valor fornecido
-        if (github === '') {
-            updateFields.$unset = { github: "" };
-        } else {
-            updateFields.github = github || user.github;
+            if (!mongoose.Types.ObjectId.isValid(id)) {
+                return res.status(400).json({ msg: 'ID inválido' });
+            }
+
+            const user = await User.findById(id);
+            if (!user) {
+                return res.status(404).json({ msg: 'Usuário não encontrado' });
+            }
+
+            let newPictureUrl = user.picturePath; // Começa com a URL existente
+
+            // Se uma nova imagem foi enviada, faça o upload para o Firebase
+            if (req.file) {
+                // 1. DELETAR IMAGEM ANTIGA DO FIREBASE (se existir)
+                if (user.picturePath) {
+                    try {
+                        // Extrai o nome do arquivo da URL antiga
+                        const oldFileName = user.picturePath.split(`${bucket.name}/`)[1];
+                        if (oldFileName) {
+                            await bucket.file(oldFileName).delete();
+                        }
+                    } catch (deleteError) {
+                        console.error("Erro ao deletar imagem antiga, continuando...", deleteError);
+                    }
+                }
+
+                // 2. UPLOAD DA NOVA IMAGEM (lógica igual à do 'register')
+                const fileName = `profilePictures/${uuidv4()}-${req.file.originalname}`;
+                const file = bucket.file(fileName);
+
+                await file.save(req.file.buffer, {
+                    metadata: { contentType: req.file.mimetype },
+                });
+
+                await file.makePublic();
+                
+                newPictureUrl = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
+            }
+
+            // Atualiza os campos do usuário no banco de dados
+            user.name = name || user.name;
+            user.course = course || user.course;
+            user.bio = bio || user.bio;
+            user.github = github || user.github;
+            user.linkedin = linkedin || user.linkedin;
+            user.picturePath = newPictureUrl;
+
+            const updatedUser = await user.save();
+
+            res.status(200).json({ msg: 'Usuário atualizado com sucesso!', user: updatedUser });
+
+        } catch (error) {
+            console.error(error);
+
+            res.status(500).json({ msg: 'Erro no servidor ao atualizar o usuário' });
         }
-
-        // Se `linkedin` for vazio, remova o campo, senão atualize com o valor fornecido
-        if (linkedin === '') {
-            if (!updateFields.$unset) updateFields.$unset = {};
-            updateFields.$unset.linkedin = "";
-        } else {
-            updateFields.linkedin = linkedin || user.linkedin;
-        }
-
-        // Atualiza o usuário com os campos fornecidos ou removendo os campos vazios
-        const updatedUser = await User.findByIdAndUpdate(
-            id,
-            updateFields,
-            { new: true, runValidators: true } // Retorne o documento atualizado
-        );
-
-        res.status(200).json({ msg: 'Usuário atualizado com sucesso!', user: updatedUser });
-    } catch (error) {
-        res.status(500).json({ msg: 'Erro no servidor ao atualizar o usuário' });
-    }
-};
+    });
+}
 
     async getUserById(req, res) {
         const id = req.params.id;
