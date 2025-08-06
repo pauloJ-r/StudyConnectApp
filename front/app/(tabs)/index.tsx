@@ -2,15 +2,35 @@ import AppHeaderBar from "@/components/AppHeaderBar";
 import SearchBar from "@/components/SearchBar";
 import { Colors } from "@/constants/Colors";
 import { SafeAreaView, View, StyleSheet } from "react-native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PostList from "@/components/PostList";
-import { mockPosts } from "../../mock/homescreen";
 import { AddButton } from "@/components/AddButton";
+import { Post } from "@/types/post";
+import { buildPostFromData, listPosts } from "@/services/postService";
 
 export default function HomeScreen() {
   // States.
-
+  const [posts, setPosts] = useState<Post[]>([]);
   // TODO: Adicionar useEffect para dar fetch a entidade de feed
+  useEffect(() => {
+    async function fetchPosts(offset: number = 0, limit: number = 10): Promise<void> {
+      try {
+        const fetchedPosts = await listPosts(offset, limit);
+
+        if(Array.isArray(fetchedPosts) && fetchedPosts.length > 0) {
+          fetchedPosts.forEach(post => {
+            return buildPostFromData(post);
+          });
+
+          setPosts(fetchedPosts);
+        }
+      } catch (error) {
+        console.log(error);        
+      }
+    }
+
+    fetchPosts();
+  });
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -28,7 +48,7 @@ export default function HomeScreen() {
           {/* TODO: Adicionar state de posts e groups. */}
 
           {/* Posts. */}
-          <PostList posts={mockPosts} />
+          <PostList posts={posts} />
         </View>
 
         <AddButton />
