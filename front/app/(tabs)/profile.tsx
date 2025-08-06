@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Dimensions, SafeAreaView, ActivityIndicator, Text, FlatList } from "react-native";
+import { View, StyleSheet, Dimensions, ActivityIndicator, Text, FlatList } from "react-native";
+
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import BaseTabSwitcher from "@/components/BaseTabSwitcher";
 import TabSwitcherSelector from "@/components/TabSwitcherSelector";
