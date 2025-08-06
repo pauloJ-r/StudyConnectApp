@@ -10,14 +10,17 @@ import {
     SafeAreaView,
     ScrollView,
     Alert,
-    ActivityIndicator // -> NOVO: Para indicar carregamento
+    ActivityIndicator,
+    Platform // -> NOVO: Para checar o sistema operacional
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-// -> NOVO: Importe suas funções de serviço da API
-import { getUserProfile, updateUserProfile } from '@/services/profileService'; 
+import * as ImagePicker from 'expo-image-picker'; // -> NOVO: Importando o Image Picker
 
-// -> MODIFICADO: A interface agora pode ter valores nulos inicialmente
-// e alinhamos pictureUri para picturePath para consistência com a API
+// -> NOVO: Importe suas funções de serviço da API
+// Assumimos que você tem uma função separada para upload de imagem
+import { getUserProfile, updateUserProfile } from '@/services/profileService';
+
+// Interface para os dados do perfil
 interface ProfileData {
     name: string;
     course: string;
@@ -57,16 +60,17 @@ const EditableInput: React.FC<EditableInputProps> = ({ label, value, onChangeTex
 
 
 export default function EditProfileScreen() {
-    // -> MODIFICADO: Estados de controle e inicialização do perfil como nulo
     const [profile, setProfile] = useState<ProfileData | null>(null);
-    const [isLoading, setIsLoading] = useState(true); // Para o carregamento inicial
-    const [isSaving, setIsSaving] = useState(false);   // Para o processo de salvamento
+    const [isLoading, setIsLoading] = useState(true);
+    const [isSaving, setIsSaving] = useState(false);
+    // -> NOVO: Estado para armazenar a nova imagem selecionada
+    const [newImage, setNewImage] = useState<ImagePicker.ImagePickerAsset | null>(null);
+    const router = useRouter();
 
-    // -> NOVO: useEffect para buscar os dados do perfil quando a tela carrega
     useEffect(() => {
         const loadProfileData = async () => {
             try {
-                const userId = "68811f436c92232ca34eecb4"; // Obtenha o ID do usuário logado
+                const userId = "68811f436c92232ca34eecb4";
                 const data = await getUserProfile(userId);
                 setProfile(data);
             } catch (error) {
@@ -78,64 +82,102 @@ export default function EditProfileScreen() {
         };
 
         loadProfileData();
-    }, []); // O array vazio garante que isso rode apenas uma vez
+    }, []);
 
-    // Função para atualizar um campo específico no estado
     const handleInputChange = (field: keyof ProfileData, value: string) => {
         if (profile) {
-            setProfile(prevState => ({
-                ...prevState!,
-                [field]: value,
-            }));
+            setProfile(prevState => ({ ...prevState!, [field]: value }));
         }
     };
     
-    // Função para simular a seleção de uma nova imagem (sem alterações)
-    const handlePickImage = () => { Alert.alert("Editar Foto", "Implemente a lógica de seleção de imagem aqui."); };
+    // -> MODIFICADO: Função para escolher a imagem
+    const handlePickImage = () => {
+        Alert.alert(
+            "Alterar Foto do Perfil",
+            "Escolha uma opção",
+            [
+                { text: "Tirar Foto...", onPress: () => pickImage('camera') },
+                { text: "Escolher da Galeria...", onPress: () => pickImage('gallery') },
+                { text: "Cancelar", style: "cancel" }
+            ]
+        );
+    };
 
-    // -> MODIFICADO: Função para confirmar e enviar as alterações para a API
-    const handleConfirm = async () => {
-        if (!profile) return; // Não faz nada se o perfil não estiver carregado
-        const router = useRouter(); // -> NOVO: Inicializa o hook de navegação
+    // -> NOVO: Função auxiliar que lida com a lógica da câmera e galeria
+    const pickImage = async (source: 'camera' | 'gallery') => {
+        let result;
+        
+        if (source === 'camera') {
+            const permission = await ImagePicker.requestCameraPermissionsAsync();
+            if (!permission.granted) {
+                Alert.alert("Permissão necessária", "Você precisa permitir o acesso à câmera para tirar uma foto.");
+                return;
+            }
+            result = await ImagePicker.launchCameraAsync({
+                allowsEditing: true,
+                aspect: [1, 1],
+                quality: 0.7,
+            });
+        } else {
+            const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+            if (!permission.granted) {
+                Alert.alert("Permissão necessária", "Você precisa permitir o acesso à galeria para escolher uma foto.");
+                return;
+            }
+            result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsEditing: true,
+                aspect: [1, 1],
+                quality: 0.7,
+            });
+        }
 
-        setIsSaving(true);
-        try {
-            const userId = "68811f436c92232ca34eecb4"; // ID do usuário logado
-            await updateUserProfile(userId, profile); // Envia todos os dados do perfil
-            Alert.alert("Sucesso", "Informações do perfil atualizadas!");
-            // Opcional: navegar de volta para a tela anterior
-            router.back(); // -> NOVO: Navega de volta para a tela de perfil
-        } catch (error) {
-            console.error("Erro ao atualizar perfil:", error);
-            Alert.alert("Erro", "Não foi possível salvar as alterações.");
-        } finally {
-            setIsSaving(false);
+        if (!result.canceled && result.assets && result.assets.length > 0) {
+            const selectedImage = result.assets[0];
+            setNewImage(selectedImage); // Armazena o objeto da imagem para o upload
+            if (profile) {
+                // Atualiza a imagem de preview na tela
+                setProfile(prev => ({ ...prev!, picturePath: selectedImage.uri }));
+            }
         }
     };
 
-    // -> NOVO: Renderiza um indicador de carregamento enquanto busca os dados
+    // -> MODIFICADO: Função para confirmar e enviar as alterações
+// Em EditProfileScreen.tsx
+
+const handleConfirm = async () => {
+    if (!profile) return;
+    setIsSaving(true);
+    try {
+        const userId = "68811f436c92232ca34eecb4";
+
+        // -> CORREÇÃO PRINCIPAL:
+        // Passamos o objeto 'profile' com os textos E o objeto 'newImage' (que pode ser nulo)
+        // para a mesma função de serviço. A responsabilidade agora é dela.
+        await updateUserProfile(userId, profile, newImage);
+        
+        Alert.alert("Sucesso", "Informações do perfil atualizadas!");
+        router.back();
+    } catch (error) {
+        console.error("Erro ao atualizar perfil:", error);
+        Alert.alert("Erro", "Não foi possível salvar as alterações.");
+    } finally {
+        setIsSaving(false);
+    }
+};
+
     if (isLoading) {
-        return (
-            <View style={styles.centered}>
-                <ActivityIndicator size="large" color="#4F46E5" />
-            </View>
-        );
+        return <View style={styles.centered}><ActivityIndicator size="large" color="#4F46E5" /></View>;
     }
 
-    // -> NOVO: Renderiza uma mensagem de erro ou nada se o perfil não carregar
     if (!profile) {
-        return (
-            <View style={styles.centered}>
-                <Text>Não foi possível carregar o perfil.</Text>
-            </View>
-        );
+        return <View style={styles.centered}><Text>Não foi possível carregar o perfil.</Text></View>;
     }
 
     return (
         <SafeAreaView style={styles.safeArea}>
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.container}>
                 <Text style={styles.title}>Editar Informações</Text>
-
                 <View style={styles.profilePictureContainer}>
                     <Image
                         source={{ uri: profile.picturePath || undefined }}
@@ -146,7 +188,6 @@ export default function EditProfileScreen() {
                     </TouchableOpacity>
                 </View>
 
-                {/* Os inputs agora usam os dados do state que vieram da API */}
                 <EditableInput label="Nome" value={profile.name} onChangeText={(text) => handleInputChange('name', text)} />
                 <EditableInput label="Curso" value={profile.course} onChangeText={(text) => handleInputChange('course', text)} />
                 <EditableInput label="Descrição" value={profile.bio} onChangeText={(text) => handleInputChange('bio', text)} />
@@ -154,19 +195,14 @@ export default function EditProfileScreen() {
                 <EditableInput label="GitHub" value={profile.github} onChangeText={(text) => handleInputChange('github', text)} />
             </ScrollView>
 
-            {/* -> MODIFICADO: O botão agora mostra um estado de carregamento */}
             <TouchableOpacity style={[styles.confirmButton, isSaving && styles.buttonDisabled]} onPress={handleConfirm} disabled={isSaving}>
-                {isSaving ? (
-                    <ActivityIndicator size="small" color="#FFF" />
-                ) : (
-                    <Feather name="check" size={30} color="#FFF" />
-                )}
+                {isSaving ? <ActivityIndicator size="small" color="#FFF" /> : <Feather name="check" size={30} color="#FFF" />}
             </TouchableOpacity>
         </SafeAreaView>
     );
 }
 
-// -> MODIFICADO: Adicionado estilos para 'centered' e 'buttonDisabled'
+// Estilos (sem alterações significativas)
 const styles = StyleSheet.create({
     safeArea: { flex: 1, backgroundColor: '#F3F4F6' },
     container: { paddingHorizontal: 24, paddingBottom: 100, alignItems: 'center' },

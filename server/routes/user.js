@@ -13,7 +13,7 @@ router.post('/auth/login', UserController.login);
 
 router.get('/user/:id', UserController.getUserById);
 
-router.put('/user/:id', UserController.updateUser, /* upload.single('picture')*/);
+router.put('/user/:id', UserController.updateUser);
 
 router.get('/users', UserController.getUsers, checkToken);
 
