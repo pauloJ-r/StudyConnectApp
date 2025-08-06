@@ -1,9 +1,13 @@
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet, Text, View, RefreshControl } from 'react-native';
 import PostItem from "./PostItem";
 import { Post } from '@/types/post';
 
 type PostListProps = {
     posts?: Post[];
+    onEndReached: (postsLength: number) => Promise<void>;
+    isLoading: boolean;
+    refreshing: boolean;
+    onRefresh: () => Promise<void>;
 };
 
 function EmptyPostMessage() {
@@ -16,7 +20,7 @@ function EmptyPostMessage() {
     );
 }
 
-export default function PostList({ posts = [] }: PostListProps) {
+export default function PostList({ posts = [], onEndReached, onRefresh, isLoading, refreshing }: PostListProps) {
     return (
         <FlatList
             contentContainerStyle={{ marginBottom: 100 }}
@@ -28,6 +32,16 @@ export default function PostList({ posts = [] }: PostListProps) {
             renderItem={({ item }) => (
                 <PostItem postData={item} />
             )}
+            onEndReached={() => onEndReached(posts.length)}
+            onEndReachedThreshold={0.7}
+            ListFooterComponent={isLoading ? <ActivityIndicator style={{ marginBottom: 150 }} /> : <View style={{ marginBottom: 150 }}></View>}
+            refreshControl={
+                <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
+                    colors={['#2196F3']}
+                />
+            }
         />
     );
 }

@@ -11,26 +11,50 @@ import { buildPostFromData, listPosts } from "@/services/postService";
 export default function HomeScreen() {
   // States.
   const [posts, setPosts] = useState<Post[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+
+  async function refreshPosts(): Promise<void> {
+    setPosts([]);
+    setRefreshing(true);
+    setHasMore(true);
+    await fetchPosts(0);
+    setRefreshing(false);
+  }
+
+  async function fetchPosts(offset = 0, limit = 10): Promise<void> {
+    if (isLoading || !hasMore) return;
+
+    setIsLoading(true);
+
+    try {
+      const fetchedPosts = await listPosts(offset, limit);
+
+      if (Array.isArray(fetchedPosts)) {
+        if (fetchedPosts.length < limit) {
+          setHasMore(false); // acabou os posts
+        }
+
+        fetchedPosts.map(buildPostFromData);
+
+        if (offset === 0) {
+          setPosts(fetchedPosts); // primeira carga
+        } else {
+          setPosts(prev => [...prev, ...fetchedPosts]); // append
+        }
+      }
+    } catch (error) {
+      console.error("Erro ao carregar posts:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   // TODO: Adicionar useEffect para dar fetch a entidade de feed
   useEffect(() => {
-    async function fetchPosts(offset: number = 0, limit: number = 10): Promise<void> {
-      try {
-        const fetchedPosts = await listPosts(offset, limit);
-
-        if(Array.isArray(fetchedPosts) && fetchedPosts.length > 0) {
-          fetchedPosts.forEach(post => {
-            return buildPostFromData(post);
-          });
-
-          setPosts(fetchedPosts);
-        }
-      } catch (error) {
-        console.log(error);        
-      }
-    }
-
     fetchPosts();
-  });
+  }, []);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -48,7 +72,7 @@ export default function HomeScreen() {
           {/* TODO: Adicionar state de posts e groups. */}
 
           {/* Posts. */}
-          <PostList posts={posts} />
+          <PostList posts={posts} onEndReached={fetchPosts} isLoading={isLoading} refreshing={refreshing} onRefresh={refreshPosts} />
         </View>
 
         <AddButton />
