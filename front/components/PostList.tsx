@@ -1,6 +1,7 @@
 import { ActivityIndicator, FlatList, StyleSheet, Text, View, RefreshControl } from 'react-native';
 import PostItem from "./PostItem";
 import { Post } from '@/types/post';
+import { Colors } from '@/constants/Colors';
 
 type PostListProps = {
     posts?: Post[];
@@ -39,7 +40,7 @@ export default function PostList({ posts = [], onEndReached, onRefresh, isLoadin
                 <RefreshControl
                     refreshing={refreshing}
                     onRefresh={onRefresh}
-                    colors={['#2196F3']}
+                    colors={[Colors.primary_1]}
                 />
             }
         />
