@@ -1,5 +1,6 @@
 import { useCallback } from "react";
 import { API_URL } from "../env";
+import api from "./api";
 
 type Picture = {
   uri: string;
@@ -58,25 +59,24 @@ export default function useAuth() {
   }, []);
 
   const login = useCallback(
-    async (data: LoginData): Promise<{ token: string; user: User }> => {
-      const response = await fetch(`${API_URL}/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
+    async (
+      data: LoginData
+    ): Promise<{ msg: string; token: string; user: User }> => {
+      try {
+        const response = await api.post("/auth/login", data, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.msg || "Erro na autenticação");
+        return response.data; // msg, token, user
+      } catch (error: any) {
+        const msg = error.response?.data?.msg || "Erro na autenticação";
+        throw new Error(msg);
       }
-
-      return response.json();
     },
     []
   );
-
   return {
     register,
     login,

@@ -3,7 +3,7 @@ import Input from "@/components/Input";
 import { AppButton } from "@/components/Button";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import useAuth from "@/services/useAuth";
+import useAuth from "@/services/authService";
 
 export default function SignupForm() {
   const { register } = useAuth();

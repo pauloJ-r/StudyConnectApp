@@ -7,7 +7,7 @@ import SignupForm from "./signup";
 import { Colors } from "@/constants/Colors";
 import Input from "@/components/Input";
 import { useRouter } from "expo-router";
-import useAuth from "@/services/useAuth";
+import useAuth from "@/services/authService";
 
 export default function LoginScreen() {
   const [activeTab, setActiveTab] = useState<"login" | "signup">("login");
@@ -20,16 +20,10 @@ export default function LoginScreen() {
   const handleLogin = async () => {
     try {
       const result = await login({ email, password });
-      //Alert.alert("Sucesso", result.msg || "Login realizado com sucesso!");
-      Alert.alert("Sucesso", "Login realizado com sucesso!");
-
-      // Aqui você pode salvar o token no AsyncStorage, Context, etc
-      // Exemplo básico: salvar no AsyncStorage (precisa importar e instalar)
-      // await AsyncStorage.setItem("token", result.token);
-
-      router.replace("/(tabs)"); // rota após login
+      Alert.alert("Sucesso", result.msg || "Login realizado com sucesso!");
+      router.replace("/(tabs)");
     } catch (error: any) {
-      Alert.alert("Erro", error.message);
+      Alert.alert("Erro", error.message || "Erro ao fazer login.");
     }
   };
 
