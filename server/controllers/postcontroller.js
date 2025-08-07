@@ -3,11 +3,14 @@ const Comentario = require('../models/comentario');
 const User = require('../models/User');
 const { updateUserBadges } = require('../controllers/badgeController');
 
+
+class PostController {
+
 // Criar post
-exports.createPost = async (req, res) => {
+ async createPost(req, res) {
     const { titulo, texto, userId } = req.body;
     try {
-        const post = await Post.create({ titulo, texto, userId});
+        const post = await Post.create({ titulo, texto, userId });
         res.status(201).json(post);
     } catch (error) {
         console.error('Erro ao criar o post:', error);
@@ -16,9 +19,12 @@ exports.createPost = async (req, res) => {
 };
 
 // Buscar todos os posts
-exports.getPosts = async (req, res) => {
+async getPosts(req, res) {
     try {
-        const posts = await Post.find().populate('userId', '-password');
+        const offset = parseInt(req.params.offset);
+        const limit = parseInt(req.params.limit);
+
+        const posts = await Post.find().skip(offset).limit(limit).populate('userId', '-password');
         res.status(200).json(posts);
     } catch (error) {
         console.error('Erro ao buscar os posts:', error);
@@ -26,7 +32,7 @@ exports.getPosts = async (req, res) => {
     }
 };
 // Buscar posts de um usuário específico
-exports.getPostsByUserId = async (req, res) => {
+ async getPostsByUserId(req, res) {
     const { userId } = req.params;
     try {
         console.log('Procurando posts para o userId:', userId); // Adicione log para depuração
@@ -44,7 +50,7 @@ exports.getPostsByUserId = async (req, res) => {
 
 
 // Buscar post por ID
-exports.getPostById = async (req, res) => {
+ async getPostById(req, res) {
     const { id } = req.params;
     try {
         const post = await Post.findById(id).populate('userId', '-password');
@@ -59,7 +65,7 @@ exports.getPostById = async (req, res) => {
 };
 
 // Atualizar post
-exports.updatePost = async (req, res) => {
+async updatePost(req, res) {
     const { id } = req.params;
     const { titulo, texto } = req.body;
     try {
@@ -75,7 +81,7 @@ exports.updatePost = async (req, res) => {
 };
 
 // Remover post
-exports.removePost = async (req, res) => {
+async removePost(req, res) {
     const { id } = req.params;
     try {
         console.log(`Tentando remover post com ID: ${id}`);
@@ -95,7 +101,7 @@ exports.removePost = async (req, res) => {
 };
 
 // Adicionar ou remover um like
-exports.toggleLike = async (req, res) => {
+async toggleLike(req, res) {
     try {
         const { postId } = req.params;
         const userId = req.user.id; // Supondo que você tenha middleware de autenticação que adiciona `req.user`
@@ -118,7 +124,8 @@ exports.toggleLike = async (req, res) => {
 
         await post.save();
 
-        await updateUserBadges(postId);
+        await updateUserBadges(postId, "post");
+
 
         res.status(200).json({ message: 'Like atualizado com sucesso', likes: post.likes });
     } catch (error) {
@@ -130,7 +137,7 @@ exports.toggleLike = async (req, res) => {
 
 
 // Obter a quantidade de likes de um post
-exports.getLikesCount = async (req, res) => {
+async getLikesCount(req, res) {
     try {
         const { postId } = req.params;
 
@@ -146,7 +153,7 @@ exports.getLikesCount = async (req, res) => {
     }
 };
 
-exports.searchPosts = async (req, res) => {
+async searchPosts(req, res) {
     try {
         const { tag, username, keyword } = req.query;
 
@@ -185,3 +192,26 @@ exports.searchPosts = async (req, res) => {
         res.status(500).json({ message: 'Erro ao realizar a pesquisa', error: error.message });
     }
 };
+
+async postsRelevantes(req, res) {
+    const userId = req.params.id;
+
+  try {
+    const perguntasRelevantes = await Post.countDocuments({
+      userId: userId,
+      $expr: { $gt: [{ $size: "$likes" }, 10] }
+    });
+
+
+    return res.status(200).json({
+      perguntasRelevantes
+    });
+  } catch (error) {
+    console.error("Erro ao buscar dados relevantes:", error);
+    return res.status(500).json({ message: "Erro interno do servidor" });
+  }
+}
+
+}
+
+module.exports = new PostController();

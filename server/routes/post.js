@@ -8,7 +8,7 @@ const checkToken = require('../middlewares/authMiddleware');
 router.post('/', checkToken, postController.createPost);
 
 //rota /posts     pegar toods os posts
-router.get('/', postController.getPosts);
+router.get('/:offset?/:limit?', postController.getPosts);
 
 //rota /posts/:id       pegar posts com um id do posts
 router.get('/:id', postController.getPostById);
@@ -30,6 +30,9 @@ router.get('/:postId/likes-count', postController.getLikesCount);
 
 // Rota para pesquisar posts
 router.get('/search', checkToken, postController.searchPosts);
+
+// Rpta para buscar posts relevantes
+router.get('/:userId/relevantPost', postController.postsRelevantes);
 
 /* EXEMPLOS DE ROTAS PARA PESQUISA
 

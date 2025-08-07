@@ -1,17 +1,10 @@
+// middlewares/upload.js (exemplo de caminho)
 const multer = require('multer');
-const path = require('path');
 
-// Configuração de armazenamento
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'uploads/'); // Pasta onde as imagens serão salvas
-    },
-    filename: function (req, file, cb) {
-        cb(null, Date.now() + path.extname(file.originalname)); // Define um nome único para o arquivo
-    }
-});
+// -> MUDANÇA PRINCIPAL: Usar armazenamento em memória
+const storage = multer.memoryStorage();
 
-// Filtro para aceitar apenas imagens
+// Filtro para aceitar apenas imagens (continua igual)
 const fileFilter = (req, file, cb) => {
     if (file.mimetype.startsWith('image/')) {
         cb(null, true);
