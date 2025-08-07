@@ -1,25 +1,73 @@
-import { View, StyleSheet, Text } from "react-native";
+import { View, StyleSheet, Text, Alert } from "react-native";
 import Input from "@/components/Input";
 import { AppButton } from "@/components/Button";
 import { useRouter } from "expo-router";
+import { useState } from "react";
+import useAuth from "@/services/authService";
 
 export default function SignupForm() {
+  const { register } = useAuth();
   const router = useRouter();
+
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [course, setCourse] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmpassword, setConfirmPassword] = useState("");
+  const [picture, setPicture] = useState(null);
+
+  const handleRegister = async () => {
+    try {
+      await register({ name, email, password, confirmpassword, picture });
+      Alert.alert("Sucesso", "Cadastro realizado com sucesso!");
+      router.replace("/login");
+    } catch (error: any) {
+      Alert.alert("Erro", error.message);
+    }
+  };
 
   return (
     <View style={styles.form}>
       <Text style={styles.title}>Criar Conta</Text>
       <Text style={styles.subtitle}>Junte-se à comunidade de estudos</Text>
 
-      <Input placeholder="Nome" iconName="person.crop.circle.fill" />
-      <Input placeholder="Email" iconName="envelope" />
-      <Input placeholder="Curso" iconName="graduationcap" />
-      <Input placeholder="Senha" iconName="key" secureTextEntry />
-      <Input placeholder="Confirmar Senha" iconName="key" secureTextEntry />
+      <Input
+        placeholder="Nome"
+        iconName="person.crop.circle.fill"
+        value={name}
+        onChangeText={setName}
+      />
+      <Input
+        placeholder="Email"
+        iconName="envelope"
+        value={email}
+        onChangeText={setEmail}
+      />
+      <Input
+        placeholder="Curso"
+        iconName="graduationcap"
+        value={course}
+        onChangeText={setCourse}
+      />
+      <Input
+        placeholder="Senha"
+        iconName="key"
+        secureTextEntry
+        value={password}
+        onChangeText={setPassword}
+      />
+      <Input
+        placeholder="Confirmar Senha"
+        iconName="key"
+        secureTextEntry
+        value={confirmpassword}
+        onChangeText={setConfirmPassword}
+      />
+
       <AppButton
         style={styles.button}
         label="Criar Conta"
-        onPress={() => router.replace("/login")}
+        onPress={handleRegister}
       />
     </View>
   );

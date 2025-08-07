@@ -2,15 +2,30 @@ import BaseTabSwitcher from "@/components/BaseTabSwitcher";
 import { AppButton } from "@/components/Button";
 import TabSwitcherSelector from "@/components/TabSwitcherSelector";
 import React, { useState } from "react";
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Alert, Image, StyleSheet, Text, View } from "react-native";
 import SignupForm from "./signup";
 import { Colors } from "@/constants/Colors";
 import Input from "@/components/Input";
 import { useRouter } from "expo-router";
+import useAuth from "@/services/authService";
 
 export default function LoginScreen() {
   const [activeTab, setActiveTab] = useState<"login" | "signup">("login");
+  const { login } = useAuth();
   const router = useRouter();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleLogin = async () => {
+    try {
+      const result = await login({ email, password });
+      Alert.alert("Sucesso", result.msg || "Login realizado com sucesso!");
+      router.replace("/(tabs)");
+    } catch (error: any) {
+      Alert.alert("Erro", error.message || "Erro ao fazer login.");
+    }
+  };
 
   return (
     <View style={styles.wrapper}>
@@ -38,13 +53,24 @@ export default function LoginScreen() {
           <Text style={styles.title}>Bem-vindo de volta!</Text>
           <Text style={styles.subtitle}>Entre para continuar seus estudos</Text>
 
-          <Input placeholder="Email" iconName="envelope" />
-          <Input placeholder="Senha" iconName="key" secureTextEntry />
+          <Input
+            placeholder="Email"
+            iconName="envelope"
+            value={email}
+            onChangeText={setEmail}
+          />
+          <Input
+            placeholder="Senha"
+            iconName="key"
+            secureTextEntry
+            value={password}
+            onChangeText={setPassword}
+          />
 
           <AppButton
             style={styles.button}
             label="Entrar"
-            onPress={() => router.replace("/(tabs)")}
+            onPress={handleLogin}
           />
         </View>
       ) : (
