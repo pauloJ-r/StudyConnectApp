@@ -157,7 +157,7 @@ const handleConfirm = async () => {
         await updateUserProfile(userId, profile, newImage);
         
         Alert.alert("Sucesso", "Informações do perfil atualizadas!");
-        router.back();
+        router.replace('/(tabs)/profile');
     } catch (error) {
         console.error("Erro ao atualizar perfil:", error);
         Alert.alert("Erro", "Não foi possível salvar as alterações.");
