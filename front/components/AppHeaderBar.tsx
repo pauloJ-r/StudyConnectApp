@@ -18,7 +18,7 @@ export default function AppHeaderBar() {
 
                 <TouchableOpacity >
                     <Image
-                        source={{ uri: 'https://i.pravatar.cc/150?img=3' }}
+                        source={require('@/assets/images/avatar.webp')}
                         style={styles.profileImage}
                     />
                 </TouchableOpacity>
