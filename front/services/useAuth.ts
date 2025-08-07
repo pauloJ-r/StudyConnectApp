@@ -15,6 +15,18 @@ type RegisterData = {
   picture?: Picture;
 };
 
+type LoginData = {
+  email: string;
+  password: string;
+};
+
+type User = {
+  id: string;
+  name: string;
+  email: string;
+  picturePath?: string;
+};
+
 export default function useAuth() {
   const register = useCallback(async (data: RegisterData) => {
     const formData = new FormData();
@@ -45,11 +57,28 @@ export default function useAuth() {
     return response.json();
   }, []);
 
-  // Depois por login, logout, etc
+  const login = useCallback(
+    async (data: LoginData): Promise<{ token: string; user: User }> => {
+      const response = await fetch(`${API_URL}/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.msg || "Erro na autenticação");
+      }
+
+      return response.json();
+    },
+    []
+  );
 
   return {
     register,
-    // login,
-    // logout,
+    login,
   };
 }
