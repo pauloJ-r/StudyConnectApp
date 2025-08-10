@@ -14,11 +14,18 @@ export default function SignupForm() {
   const [course, setCourse] = useState("");
   const [password, setPassword] = useState("");
   const [confirmpassword, setConfirmPassword] = useState("");
-  const [picture, setPicture] = useState(null);
+  const [picture] = useState(null);
 
   const handleRegister = async () => {
     try {
-      await register({ name, email, password, confirmpassword, picture });
+      await register({
+        name,
+        email,
+        password,
+        confirmpassword,
+        course,
+        picture,
+      });
       Alert.alert("Sucesso", "Cadastro realizado com sucesso!");
       router.replace("/login");
     } catch (error: any) {

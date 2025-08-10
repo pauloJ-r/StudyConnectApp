@@ -1,5 +1,4 @@
 import { useCallback } from "react";
-import { API_URL } from "../env";
 import api from "./api";
 
 type Picture = {
@@ -11,6 +10,7 @@ type Picture = {
 type RegisterData = {
   name: string;
   email: string;
+  course: string;
   password: string;
   confirmpassword: string;
   picture?: Picture;
@@ -34,6 +34,7 @@ export default function useAuth() {
 
     formData.append("name", data.name);
     formData.append("email", data.email);
+    formData.append("course", data.course);
     formData.append("password", data.password);
     formData.append("confirmpassword", data.confirmpassword);
 
@@ -45,17 +46,17 @@ export default function useAuth() {
       } as any);
     }
 
-    const response = await fetch(`${API_URL}/auth/register`, {
-      method: "POST",
-      body: formData,
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || "Erro no cadastro");
+    try {
+      const response = await api.post("/auth/register", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      return response.data;
+    } catch (error: any) {
+      const msg = error.response?.data?.msg || "Erro no cadastro";
+      throw new Error(msg);
     }
-
-    return response.json();
   }, []);
 
   const login = useCallback(
@@ -63,12 +64,7 @@ export default function useAuth() {
       data: LoginData
     ): Promise<{ msg: string; token: string; user: User }> => {
       try {
-        const response = await api.post("/auth/login", data, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
+        const response = await api.post("/auth/login", data);
         return response.data; // msg, token, user
       } catch (error: any) {
         const msg = error.response?.data?.msg || "Erro na autenticação";
@@ -77,6 +73,7 @@ export default function useAuth() {
     },
     []
   );
+
   return {
     register,
     login,
