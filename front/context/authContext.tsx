@@ -1,0 +1,95 @@
+// src/context/AuthContext.tsx
+import React, { createContext, useState, useEffect, useCallback } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import useAuthService from "../services/authService";
+
+type Picture = {
+  uri: string;
+  name: string;
+  type: string;
+} | null;
+
+type RegisterData = {
+  name: string;
+  email: string;
+  course: string;
+  password: string;
+  confirmpassword: string;
+  picture?: Picture;
+};
+
+type LoginData = {
+  email: string;
+  password: string;
+};
+
+type User = {
+  id: string;
+  name: string;
+  email: string;
+  picturePath?: string;
+};
+
+type AuthContextType = {
+  user: User | null;
+  token: string | null;
+  login: (data: LoginData) => Promise<void>;
+  register: (data: RegisterData) => Promise<void>;
+  logout: () => Promise<void>;
+};
+
+export const AuthContext = createContext<AuthContextType>(
+  {} as AuthContextType
+);
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const { login: loginService, register: registerService } = useAuthService();
+
+  const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function loadStorage() {
+      const storedUser = await AsyncStorage.getItem("@user");
+      const storedToken = await AsyncStorage.getItem("@token");
+
+      if (storedUser && storedToken) {
+        setUser(JSON.parse(storedUser));
+        setToken(storedToken);
+      }
+    }
+    loadStorage();
+  }, []);
+
+  const login = useCallback(
+    async (data: LoginData) => {
+      const result = await loginService(data);
+      setUser(result.user);
+      setToken(result.token);
+
+      await AsyncStorage.setItem("@user", JSON.stringify(result.user));
+      await AsyncStorage.setItem("@token", result.token);
+    },
+    [loginService]
+  );
+
+  const register = useCallback(
+    async (data: RegisterData) => {
+      await registerService(data);
+    },
+    [registerService]
+  );
+
+  const logout = useCallback(async () => {
+    setUser(null);
+    setToken(null);
+    await AsyncStorage.removeItem("@user");
+    await AsyncStorage.removeItem("@token");
+  }, []);
+
+  return (
+    <AuthContext.Provider value={{ user, token, login, register, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
