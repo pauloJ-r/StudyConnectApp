@@ -1,17 +1,17 @@
 import BaseTabSwitcher from "@/components/BaseTabSwitcher";
 import { AppButton } from "@/components/Button";
 import TabSwitcherSelector from "@/components/TabSwitcherSelector";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Alert, Image, StyleSheet, Text, View } from "react-native";
 import SignupForm from "./signup";
 import { Colors } from "@/constants/Colors";
 import Input from "@/components/Input";
 import { useRouter } from "expo-router";
-import useAuth from "@/services/authService";
+import { AuthContext } from "@/context/authContext";
 
 export default function LoginScreen() {
   const [activeTab, setActiveTab] = useState<"login" | "signup">("login");
-  const { login } = useAuth();
+  const { login } = useContext(AuthContext);
   const router = useRouter();
 
   const [email, setEmail] = useState("");
@@ -19,8 +19,8 @@ export default function LoginScreen() {
 
   const handleLogin = async () => {
     try {
-      const result = await login({ email, password });
-      Alert.alert("Sucesso", result.msg || "Login realizado com sucesso!");
+      await login({ email, password });
+      Alert.alert("Sucesso", "Login realizado com sucesso!");
       router.replace("/(tabs)");
     } catch (error: any) {
       Alert.alert("Erro", error.message || "Erro ao fazer login.");
