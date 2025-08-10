@@ -1,7 +1,7 @@
 // src/services/profileService.ts
-import api from './api';
-import * as ImagePicker from 'expo-image-picker';
-import { Platform } from 'react-native';
+import api from "./api";
+import * as ImagePicker from "expo-image-picker";
+import { Platform } from "react-native";
 
 export interface UserProfile {
   id: string;
@@ -16,7 +16,9 @@ export interface UserProfile {
   // adicione mais campos conforme a resposta da API
 }
 
-export async function getUserProfile(userId: string): Promise<UserProfile> {
+export async function getUserProfile(
+  userId: string | undefined
+): Promise<UserProfile> {
   const response = await api.get(`/user/${userId}`);
   return response.data;
 }
@@ -35,12 +37,12 @@ export async function getUserTrophies(userId: string) {
   return response.data;
 }
 
-export async function getUserBadgesCount(userId: string) {
+export async function getUserBadgesCount(userId: string | undefined) {
   const response = await api.get(`/user/${userId}/badges/count`);
   return response.data;
 }
 
-export async function getRelevantAnswersByUser(userId: string) {
+export async function getRelevantAnswersByUser(userId: string | undefined) {
   const response = await api.get(`/comentarios/${userId}/relevantComentario`);
   return response.data;
 }
@@ -50,12 +52,12 @@ export async function getRelevantPostsByUser(userId: string) {
   return response.data;
 }
 
-export async function getPostsByUserId(userId: string) {
+export async function getPostsByUserId(userId: string | undefined) {
   const response = await api.get(`/posts/user/${userId}`);
   return response.data;
 }
 
-export async function getAnswersByUserId(userId: string) {
+export async function getAnswersByUserId(userId: string | undefined) {
   const response = await api.get(`/comentarios/user/${userId}`);
   return response.data;
 }

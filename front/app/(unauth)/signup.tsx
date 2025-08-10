@@ -2,11 +2,11 @@ import { View, StyleSheet, Text, Alert } from "react-native";
 import Input from "@/components/Input";
 import { AppButton } from "@/components/Button";
 import { useRouter } from "expo-router";
-import { useState } from "react";
-import useAuth from "@/services/authService";
+import { useContext, useState } from "react";
+import { AuthContext } from "@/context/authContext";
 
 export default function SignupForm() {
-  const { register } = useAuth();
+  const { register } = useContext(AuthContext);
   const router = useRouter();
 
   const [name, setName] = useState("");
@@ -14,11 +14,18 @@ export default function SignupForm() {
   const [course, setCourse] = useState("");
   const [password, setPassword] = useState("");
   const [confirmpassword, setConfirmPassword] = useState("");
-  const [picture, setPicture] = useState(null);
+  const [picture] = useState(null);
 
   const handleRegister = async () => {
     try {
-      await register({ name, email, password, confirmpassword, picture });
+      await register({
+        name,
+        email,
+        password,
+        confirmpassword,
+        course,
+        picture,
+      });
       Alert.alert("Sucesso", "Cadastro realizado com sucesso!");
       router.replace("/login");
     } catch (error: any) {
