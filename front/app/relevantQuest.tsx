@@ -1,19 +1,30 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import React, { useContext, useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  ActivityIndicator,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-import { Colors } from '../constants/Colors';
-import { HeaderProfile } from '../components/HeaderProfile';
-import { AddButton } from '@/components/AddButton';
-import PostItem from '@/components/PostItem'; // Assumindo um componente para renderizar cada post
+import { Colors } from "../constants/Colors";
+import { HeaderProfile } from "../components/HeaderProfile";
+import { AddButton } from "@/components/AddButton";
+import PostItem from "@/components/PostItem"; // Assumindo um componente para renderizar cada post
 
 // Funções do seu serviço de API
-import { getUserProfile, getRelevantPostsByUser } from '../services/profileService';
+import {
+  getUserProfile,
+  getRelevantPostsByUser,
+} from "../services/profileService";
 // Importe os tipos do seu arquivo central
-import type { Post } from '../types/post';
-import type { UserProfile } from '../services/profileService';
+import type { Post } from "../types/post";
+import type { UserProfile } from "../services/profileService";
+import { AuthContext } from "@/context/authContext";
 
 const RelevantQuestPage = () => {
+  const { user } = useContext(AuthContext);
   // 1. Estados para gerenciar os dados, carregamento e erros
   const [profileData, setProfileData] = useState<UserProfile | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
@@ -24,12 +35,12 @@ const RelevantQuestPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const userId = "68811f436c92232ca34eecb4"; // O ID do usuário pode vir de outro lugar
+        const userId = user?.id; // O ID do usuário pode vir de outro lugar
 
         // Busca os dados do perfil e os posts em paralelo para melhor performance
         const [profile, relevantPosts] = await Promise.all([
           getUserProfile(userId),
-          getRelevantPostsByUser(userId)
+          getRelevantPostsByUser(userId),
         ]);
 
         setProfileData(profile);
@@ -47,11 +58,21 @@ const RelevantQuestPage = () => {
 
   // 3. Renderização condicional para os estados de carregamento e erro
   if (loading) {
-    return <ActivityIndicator style={styles.centered} size="large" color={Colors.primary_1} />;
+    return (
+      <ActivityIndicator
+        style={styles.centered}
+        size="large"
+        color={Colors.primary_1}
+      />
+    );
   }
 
   if (error) {
-    return <View style={styles.centered}><Text>{error}</Text></View>;
+    return (
+      <View style={styles.centered}>
+        <Text>{error}</Text>
+      </View>
+    );
   }
 
   // Garante que o perfil foi carregado antes de tentar renderizar o cabeçalho
@@ -78,7 +99,7 @@ const RelevantQuestPage = () => {
       <FlatList
         data={posts}
         // Com base no nosso último debug, seu PostItem espera a prop 'postData'
-        renderItem={({ item }) => <PostItem postData={item} />} 
+        renderItem={({ item }) => <PostItem postData={item} />}
         keyExtractor={(item) => item._id.toString()}
         ListHeaderComponent={renderListHeader}
         ListEmptyComponent={() => (
@@ -96,24 +117,24 @@ const RelevantQuestPage = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#E7E7E7',
+    backgroundColor: "#E7E7E7",
   },
   listContent: {
     padding: 16,
   },
   centered: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     padding: 40,
-    textAlign: 'center',
+    textAlign: "center",
   },
   title: {
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: "500",
     color: Colors.primary_1,
     marginVertical: 12,
-    textAlign: 'center',
+    textAlign: "center",
   },
 });
 

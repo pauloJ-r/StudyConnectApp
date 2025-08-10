@@ -1,22 +1,27 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import React, { useState, useEffect, useContext } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  ActivityIndicator,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-import { Colors } from '../constants/Colors';
-import { HeaderProfile } from '../components/HeaderProfile';
-import TrophyItem from '../components/TrophyItem';
-import { AddButton } from '@/components/AddButton';
+import { Colors } from "../constants/Colors";
+import { HeaderProfile } from "../components/HeaderProfile";
+import TrophyItem from "../components/TrophyItem";
+import { AddButton } from "@/components/AddButton";
 
 // Importe suas funções de serviço da API
-import { getUserProfile, getUserTrophies } from '../services/profileService'; 
+import { getUserProfile, getUserTrophies } from "../services/profileService";
 // Importe os tipos do seu arquivo central
-import type { UserProfile } from '../services/profileService';
-import type { UserBadge } from '../types/user';
-
-
-
+import type { UserProfile } from "../services/profileService";
+import type { UserBadge } from "../types/user";
+import { AuthContext } from "@/context/authContext";
 
 const TrophyPage = () => {
+  const { user } = useContext(AuthContext);
   // 1. Estados para gerenciar os dados, carregamento e erros
   const [profileData, setProfileData] = useState<UserProfile | null>(null);
   const [trophies, setTrophies] = useState<UserBadge[]>([]);
@@ -27,15 +32,13 @@ const TrophyPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const userId = "68811f436c92232ca34eecb4"; // ID do usuário
+        const userId = user?.id; // ID do usuário
 
         // Busca o perfil e os troféus em paralelo
         const [profile, userTrophies] = await Promise.all([
           getUserProfile(userId),
-          getUserTrophies(userId) // <- Use sua função real aqui!
+          getUserTrophies(userId), // <- Use sua função real aqui!
         ]);
-
-
 
         setProfileData(profile);
         setTrophies(userTrophies);
@@ -52,11 +55,21 @@ const TrophyPage = () => {
 
   // 3. Renderização condicional para carregamento e erro
   if (loading) {
-    return <ActivityIndicator style={styles.centered} size="large" color={Colors.primary_1} />;
+    return (
+      <ActivityIndicator
+        style={styles.centered}
+        size="large"
+        color={Colors.primary_1}
+      />
+    );
   }
 
   if (error) {
-    return <View style={styles.centered}><Text>{error}</Text></View>;
+    return (
+      <View style={styles.centered}>
+        <Text>{error}</Text>
+      </View>
+    );
   }
 
   // Garante que o perfil não é nulo antes de renderizar
@@ -81,19 +94,16 @@ const TrophyPage = () => {
     <SafeAreaView style={styles.safeArea}>
       <FlatList
         data={trophies}
-        
         // 1. CORREÇÃO DO KEY EXTRACTOR: Use 'item.tag' como chave única
         keyExtractor={(item) => item.tag}
-
         // 2. CORREÇÃO DAS PROPS NO RENDERITEM
         renderItem={({ item }) => (
           <TrophyItem
-            title={item.tag}                  // Use item.tag para a prop 'title'
-            count={parseInt(item.count)}      // Converta a string 'count' para número
-            color="#CD7F32"                   // Forneça uma cor padrão, já que a API não envia
+            title={item.tag} // Use item.tag para a prop 'title'
+            count={parseInt(item.count)} // Converta a string 'count' para número
+            color="#CD7F32" // Forneça uma cor padrão, já que a API não envia
           />
         )}
-        
         ListHeaderComponent={renderListHeader}
         ListEmptyComponent={() => (
           <View style={styles.centered}>
@@ -110,24 +120,24 @@ const TrophyPage = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#E7E7E7',
+    backgroundColor: "#E7E7E7",
   },
   listContent: {
     padding: 16,
   },
   centered: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     padding: 40,
-    textAlign: 'center',
+    textAlign: "center",
   },
   title: {
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: "500",
     color: Colors.primary_1,
     marginVertical: 12,
-    textAlign: 'center',
+    textAlign: "center",
   },
 });
 
