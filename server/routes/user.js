@@ -11,6 +11,8 @@ router.post('/auth/register', UserController.register);
 
 router.post('/auth/login', UserController.login);
 
+router.get('/auth/current-user', checkToken, UserController.getAuthUser);
+
 router.get('/user/:id', UserController.getUserById);
 
 router.put('/user/:id', UserController.updateUser);

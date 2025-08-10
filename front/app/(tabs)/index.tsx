@@ -2,75 +2,80 @@ import AppHeaderBar from "@/components/AppHeaderBar";
 import SearchBar from "@/components/SearchBar";
 import { Colors } from "@/constants/Colors";
 import { SafeAreaView, View, StyleSheet } from "react-native";
-import { useState } from "react";
-import { FeedEntity } from "@/types/feed_entity_enum";
-import BaseTabSwitcher from "@/components/BaseTabSwitcher";
-import TabSwitcherSelector from "@/components/TabSwitcherSelector";
+import { useEffect, useState } from "react";
 import PostList from "@/components/PostList";
-import JoinNewStudyGroupBalloon from "@/components/JoinNewStudyGroupBalloon";
-import GroupList from "@/components/GroupList";
-import { mockPosts, mockIndexableStudyGroups } from "../../mock/homescreen";
 import { AddButton } from "@/components/AddButton";
-
-
-type TabOption = 'posts' | 'groups';
+import { Post } from "@/types/post";
+import { buildPostFromData, listPosts } from "@/services/postService";
 
 export default function HomeScreen() {
   // States.
-  const [activeTab, setActiveTab] = useState<TabOption>('posts');
-  const [feedEntity, setFeedEntity] = useState(FeedEntity.Post);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
-  function handleTabChange(tab: TabOption) {
-    setActiveTab(tab);
-    if(tab === 'posts') setFeedEntity(FeedEntity.Post);
-    else if(tab === 'groups') setFeedEntity(FeedEntity.Group);
+  async function refreshPosts(): Promise<void> {
+    setPosts([]);
+    setRefreshing(true);
+    setHasMore(true);
+    await fetchPosts(0);
+    setRefreshing(false);
+  }
+
+  async function fetchPosts(offset = 0, limit = 10): Promise<void> {
+    if (isLoading || !hasMore) return;
+
+    setIsLoading(true);
+
+    try {
+      const fetchedPosts = await listPosts(offset, limit);
+
+      if (Array.isArray(fetchedPosts)) {
+        if (fetchedPosts.length < limit) {
+          setHasMore(false); // acabou os posts
+        }
+
+        fetchedPosts.map(buildPostFromData);
+
+        if (offset === 0) {
+          setPosts(fetchedPosts); // primeira carga
+        } else {
+          setPosts(prev => [...prev, ...fetchedPosts]); // append
+        }
+      }
+    } catch (error) {
+      console.error("Erro ao carregar posts:", error);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   // TODO: Adicionar useEffect para dar fetch a entidade de feed
+  useEffect(() => {
+    fetchPosts();
+  }, []);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-  
+
       <View style={styles.container}>
 
-        <AppHeaderBar/>
+        <AppHeaderBar />
 
         {/* Para usar o componente de searchbar passar parâmetro de callback para 'onSearch' */}
         {/* E para a ação do filtro (abrir modal, etx...) passar callback para 'onFilterPress' */}
-        <SearchBar/>
-
-        {/* Componente temporário. */}
-        <BaseTabSwitcher>
-
-          <TabSwitcherSelector
-          text="Feed Geral"
-          isActive={activeTab === 'posts'}
-          onTabPress={() => handleTabChange('posts')}
-          />
-
-          <TabSwitcherSelector
-          text="Meus Grupos"
-          isActive={activeTab === 'groups'}
-          onTabPress={() => handleTabChange('groups')}
-          />
-
-        </BaseTabSwitcher>
+        <SearchBar />
 
         <View style={styles.feedContainer}>
 
           {/* TODO: Adicionar state de posts e groups. */}
 
           {/* Posts. */}
-          {activeTab === 'posts' && <PostList posts={mockPosts}/>}
-
-          {/* Grupos. */}
-          {activeTab === 'groups' && 
-          <View>
-            <GroupList groups={mockIndexableStudyGroups} />
-            <JoinNewStudyGroupBalloon/>
-          </View>}
+          <PostList posts={posts} onEndReached={fetchPosts} isLoading={isLoading} refreshing={refreshing} onRefresh={refreshPosts} />
         </View>
-                <AddButton  />
+
+        <AddButton />
 
       </View>
     </SafeAreaView>
@@ -87,6 +92,4 @@ const styles = StyleSheet.create({
     marginTop: 20,
     flex: 1,
   },
-
-
 });

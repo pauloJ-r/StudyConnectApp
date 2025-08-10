@@ -41,15 +41,6 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
-          name="group-teste"
-          options={{
-            title: "Grupos",
-            tabBarIcon: ({ color }) => (
-              <IconSymbol name="person.3.fill" size={28} color={color} />
-            ),
-          }}
-        />
-        <Tabs.Screen
           name="search-teste"
           options={{
             title: "Pesquisar",
