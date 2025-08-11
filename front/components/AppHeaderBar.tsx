@@ -11,7 +11,7 @@ export default function AppHeaderBar() {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity>
+      <TouchableOpacity onPress={() => router.replace("/(tabs)")}>
         <AppLogoIcon width={40} height={40} />
       </TouchableOpacity>
 
