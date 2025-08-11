@@ -1,8 +1,12 @@
 import AppLogoIcon from "@/assets/icons/app-logo-icon.svg";
 import NotificationIcon from "@/assets/icons/notification-icon.svg";
+import { AuthContext } from "@/context/authContext";
+import { useContext } from "react";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 
 export default function AppHeaderBar() {
+  const {user} = useContext(AuthContext);
+
   return (
     <View style={styles.container}>
       <TouchableOpacity>
@@ -16,7 +20,9 @@ export default function AppHeaderBar() {
 
         <TouchableOpacity>
           <Image
-            source={require("@/assets/images/avatar-web.png")}
+            source={user?.picturePath
+              ? { uri: user.picturePath }
+              : require("@/assets/images/avatar-web.png")}
             style={styles.profileImage}
           />
         </TouchableOpacity>
