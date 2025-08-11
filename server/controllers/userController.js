@@ -291,18 +291,6 @@ class UserController {
         }
     };
 
-    async getAuthUser(req, res) {
-        try {
-            const {id} = req.user;
-            const user = await User.findById(id, '-password');
-
-            return res.status(200).json(user);
-        } catch(error) {
-            console.error(error);
-            return res.status(500).json({ msg: 'Erro no servidor ao obter usuário autenticado' });
-        }
-    }
-
 }
 
 module.exports = new UserController();

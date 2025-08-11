@@ -107,8 +107,3 @@ export async function updateUserProfile(
     throw error;
   }
 }
-
-export async function getAuthUser(): Promise<UserProfile> {
-  const response = await api.get('/auth/current-user');
-  return response.data;
-}
