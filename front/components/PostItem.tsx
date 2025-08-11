@@ -5,6 +5,7 @@ import BadgeItem from "./BadgeItem";
 import PostLikeIcon from '@/assets/icons/post-like-icon.svg';
 import PostCommentIcon from '@/assets/icons/post-comment-icon.svg';
 import AnswerPostButton from "./AnswerPostButton";
+import { useState } from "react";
 
 // A prop continua a mesma: esperamos o objeto de post completo
 type PostProps = {
@@ -16,12 +17,13 @@ export default function PostItem({ postData }: PostProps) {
     // --- Extração Segura de Dados ---
     // Aqui, pegamos os dados do 'postData' e preparamos para usar na renderização,
     // fornecendo valores padrão para evitar erros.
+    const [liked, setLiked] = useState<boolean>(postData.userLiked);
+    const [likesCount, setLikesCount] = useState<number>(postData.likes?.length || 0); // Conta os likes de forma segura
 
     const author = postData.userId; // O autor pode ser nulo
     const title = postData.titulo || 'Post sem título'; // Valor padrão para o título
     const content = postData.texto || ''; // Valor padrão para o conteúdo
     const tags = postData.tags || []; // Garante que 'tags' seja sempre um array
-    const likesCount = postData.likes?.length || 0; // Conta os likes de forma segura
     const commentsCount = postData.comments?.length || 0; // Conta os comentários de forma segura
 
     return (
@@ -65,8 +67,8 @@ export default function PostItem({ postData }: PostProps) {
                     </View>
 
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <TouchableOpacity>
-                            <PostLikeIcon width={25} height={25} />
+                        <TouchableOpacity onPress={() => {setLiked(prevLiked => !prevLiked); setLikesCount(prevCount => liked ? prevCount - 1 : prevCount + 1);}}>
+                            <PostLikeIcon width={25} height={25} fill={liked ? '#454545c2' : 'none'} />
                         </TouchableOpacity>
                         <Text style={{ marginStart: 5, ...styles.postFooterActionsText }}>
                             {likesCount}

@@ -29,11 +29,13 @@ export interface Post {
   texto: string;
   userId: PostAuthor | null;
   likes: any[]; // É um array, a contagem será o .length
+  userLiked: boolean;
   tags: string[]; // Assumindo que seja um array de strings
   comments?: any[];
   createdAt: string;
   updatedAt: string;
 }
+
 export interface UserBadge {
   label: string;
 }

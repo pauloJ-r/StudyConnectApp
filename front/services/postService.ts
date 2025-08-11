@@ -6,8 +6,9 @@ export function buildPostFromData(data: any): Post {
         _id: data._id,
         titulo: data.titulo,
         texto: data.texto,
-        userId: null,
-        likes: data.likes.length,
+        userId: data.userId,
+        likes: data.likes,
+        userLiked: data.userLiked,
         tags: data.tags,
         createdAt: data.createdAt,
         updatedAt: data.updatedAt
