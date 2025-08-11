@@ -2,10 +2,12 @@ import AppLogoIcon from "@/assets/icons/app-logo-icon.svg";
 import NotificationIcon from "@/assets/icons/notification-icon.svg";
 import { AuthContext } from "@/context/authContext";
 import { useContext } from "react";
+import { useRouter } from "expo-router";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 
 export default function AppHeaderBar() {
   const {user} = useContext(AuthContext);
+  const router = useRouter();
 
   return (
     <View style={styles.container}>
@@ -18,7 +20,7 @@ export default function AppHeaderBar() {
           <NotificationIcon width={30} height={30} />
         </TouchableOpacity>
 
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => router.push("/(tabs)/profile")}>
           <Image
             source={user?.picturePath
               ? { uri: user.picturePath }
