@@ -18,6 +18,10 @@ const PostSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
     }],
+    userLiked: {
+        type: Boolean,
+        default: false,
+    },
     tags: [{
         type: String, // Permite qualquer valor como tag
     }],

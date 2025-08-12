@@ -117,9 +117,11 @@ async toggleLike(req, res) {
         if (likeIndex === -1) {
             // Se o usuário não deu like, adiciona o like
             post.likes.push(userId);
+            post.userLiked = true;
         } else {
             // Caso contrário, remove o like
             post.likes.splice(likeIndex, 1);
+            post.userLiked = false;
         }
 
         await post.save();
