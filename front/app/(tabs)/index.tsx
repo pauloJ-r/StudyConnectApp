@@ -9,6 +9,7 @@ import { Post } from "@/types/post";
 import { buildPostFromData, listPosts } from "@/services/postService";
 
 export default function HomeScreen() {
+
   // States.
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -51,7 +52,6 @@ export default function HomeScreen() {
     }
   }
 
-  // TODO: Adicionar useEffect para dar fetch a entidade de feed
   useEffect(() => {
     fetchPosts();
   }, []);
@@ -68,8 +68,6 @@ export default function HomeScreen() {
         <SearchBar />
 
         <View style={styles.feedContainer}>
-
-          {/* TODO: Adicionar state de posts e groups. */}
 
           {/* Posts. */}
           <PostList posts={posts} onEndReached={fetchPosts} isLoading={isLoading} refreshing={refreshing} onRefresh={refreshPosts} />
