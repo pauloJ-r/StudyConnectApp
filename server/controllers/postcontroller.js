@@ -117,11 +117,9 @@ async toggleLike(req, res) {
         if (likeIndex === -1) {
             // Se o usuário não deu like, adiciona o like
             post.likes.push(userId);
-            post.userLiked = true;
         } else {
             // Caso contrário, remove o like
             post.likes.splice(likeIndex, 1);
-            post.userLiked = false;
         }
 
         await post.save();
@@ -129,7 +127,7 @@ async toggleLike(req, res) {
         await updateUserBadges(postId, "post");
 
 
-        res.status(200).json({ message: 'Like atualizado com sucesso', likes: post.likes });
+        res.status(200).json({ message: 'Like atualizado com sucesso', likes: post.likes, liked: post.likes.includes(userId) });
     } catch (error) {
         res.status(500).json({ message: 'Erro ao atualizar like', error: error.message });
     }
