@@ -32,7 +32,7 @@ export async function getRelevantComentarioByUser(userId: string) {
   return response.data;
 }
 
-export async function getUserTrophies(userId: string) {
+export async function getUserTrophies(userId: string | undefined) {
   const response = await api.get(`/user/${userId}/badges`);
   return response.data;
 }
@@ -47,7 +47,7 @@ export async function getRelevantAnswersByUser(userId: string | undefined) {
   return response.data;
 }
 
-export async function getRelevantPostsByUser(userId: string) {
+export async function getRelevantPostsByUser(userId: string | undefined) {
   const response = await api.get(`/posts/${userId}/relevantPost`);
   return response.data;
 }
@@ -63,15 +63,14 @@ export async function getAnswersByUserId(userId: string | undefined) {
 }
 
 export async function updateUserProfile(
-  userId: string,
+  userId: string | undefined,
   profileData: Partial<UserProfile>,
   newImage: ImagePicker.ImagePickerAsset | null
 ): Promise<UserProfile> {
-
   const formData = new FormData();
 
   // Adiciona os campos de texto ao FormData
-  Object.keys(profileData).forEach(key => {
+  Object.keys(profileData).forEach((key) => {
     const value = profileData[key as keyof typeof profileData];
 
     // -> CORREÇÃO 2: Verificação para evitar valores nulos ou indefinidos
@@ -84,26 +83,34 @@ export async function updateUserProfile(
   // Se uma nova imagem foi selecionada, prepara e adiciona ao FormData
   if (newImage) {
     const uri = newImage.uri;
-    const fileType = uri.split('.').pop();
+    const fileType = uri.split(".").pop();
 
     const file = {
-      uri: Platform.OS === 'android' ? uri : uri.replace('file://', ''),
+      uri: Platform.OS === "android" ? uri : uri.replace("file://", ""),
       name: `profile.${fileType}`,
       type: `image/${fileType}`,
     };
 
-    formData.append('profileImage', file as any);
+    formData.append("profileImage", file as any);
   }
 
   try {
     const response = await api.put(`/user/${userId}`, formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
+        "Content-Type": "multipart/form-data",
       },
     });
     return response.data;
   } catch (error: any) {
-    console.error("Erro no serviço updateUserProfile:", error.response?.data || error.message);
+    console.error(
+      "Erro no serviço updateUserProfile:",
+      error.response?.data || error.message
+    );
     throw error;
   }
+}
+
+export async function getAuthUser(): Promise<UserProfile> {
+  const response = await api.get("/auth/current-user");
+  return response.data;
 }

@@ -19,3 +19,18 @@ export async function listPosts(offset: number, limit: number): Promise<Post[]> 
     const response = await api.get(`posts/${offset}/${limit}`);
     return response.data;
 }
+
+export async function createPost(
+  titulo: string,
+  texto: string,
+  tags: string[],
+  userId: string,
+  token: string
+): Promise<Post> {
+  const response = await api.post(
+    'posts',
+    { titulo, texto, tags, userId },
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  return response.data;
+}
