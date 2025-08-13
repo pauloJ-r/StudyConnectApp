@@ -1,9 +1,10 @@
-import React, { useRef, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import Onboarding from "react-native-onboarding-swiper";
 import { Image, StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { Colors } from "@/constants/Colors";
 import { useRouter } from "expo-router";
 import { AppButton } from "@/components/Button";
+import { AuthContext } from "@/context/authContext";
 interface SquareProps {
   isLight: boolean;
   selected: boolean;
@@ -11,13 +12,19 @@ interface SquareProps {
 
 export default function OnboardingScreen() {
   const router = useRouter();
+  const { completeOnboarding } = useContext(AuthContext);
 
   const onboardingRef = useRef<Onboarding>(null);
   const [index, setIndex] = useState(0);
 
+  function finishOnboarding() {
+    completeOnboarding();
+    router.replace("/login");
+  }
+
   const handlePress = () => {
     if (index === pages.length - 1) {
-      router.replace("/login");
+      finishOnboarding();
     } else {
       onboardingRef.current?.goNext();
     }
@@ -98,7 +105,7 @@ export default function OnboardingScreen() {
 
       <AppButton label="Próximo" onPress={handlePress} style={styles.button} />
 
-      <TouchableOpacity onPress={() => router.replace("/login")}>
+      <TouchableOpacity onPress={finishOnboarding}>
         <Text style={styles.skipText}>Pular introdução</Text>
       </TouchableOpacity>
     </View>

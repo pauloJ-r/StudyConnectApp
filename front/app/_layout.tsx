@@ -7,14 +7,41 @@ import { StatusBar } from "react-native";
 import "react-native-reanimated";
 import { AuthContext, AuthProvider } from "@/context/authContext";
 
+function LayoutWithAuth() {
+  const { user, hasOnboarded } = useContext(AuthContext);
+
+  if (hasOnboarded === null) {
+    // ainda carregando AsyncStorage
+    return null;
+  }
+
+  return (
+    <ThemeProvider value={DefaultTheme}>
+      <Stack
+        initialRouteName={
+          !hasOnboarded ? "(unauth)" : user ? "(tabs)" : "(unauth)/login"
+        }
+      >
+        <Stack.Screen name="(unauth)" options={{ headerShown: false }} />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="(create)" options={{ headerShown: false }} />
+        <Stack.Screen name="+not-found" />
+      </Stack>
+      <StatusBar barStyle="dark-content" backgroundColor="transparent" />
+    </ThemeProvider>
+  );
+}
+
 export default function RootLayout() {
   const { user } = useContext(AuthContext);
+
   useEffect(() => {
     async function setupNavBar() {
       await NavigationBar.setButtonStyleAsync("dark");
     }
     setupNavBar();
   }, []);
+
   const [loaded] = useFonts({
     "Poppins-Regular": require("../assets/fonts/Poppins-Regular.ttf"),
     "Poppins-SemiBold": require("../assets/fonts/Poppins-SemiBold.ttf"),
@@ -30,15 +57,7 @@ export default function RootLayout() {
 
   return (
     <AuthProvider>
-      <ThemeProvider value={DefaultTheme}>
-        <Stack initialRouteName={user ? "(tabs)" : "(unauth)"}>
-          <Stack.Screen name="(unauth)" options={{ headerShown: false }} />
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="(create)" options={{ headerShown: false }} />
-          <Stack.Screen name="+not-found" />
-        </Stack>
-        <StatusBar barStyle="dark-content" backgroundColor="transparent" />
-      </ThemeProvider>
+      <LayoutWithAuth />
     </AuthProvider>
   );
 }

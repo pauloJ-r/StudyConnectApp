@@ -36,6 +36,8 @@ type AuthContextType = {
   login: (data: LoginData) => Promise<void>;
   register: (data: RegisterData) => Promise<void>;
   logout: () => Promise<void>;
+  hasOnboarded: boolean | null; // ← adiciona aqui
+  completeOnboarding: () => Promise<void>; // ← adiciona aqui
 };
 
 export const AuthContext = createContext<AuthContextType>(
@@ -47,11 +49,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [hasOnboarded, setHasOnboarded] = useState<boolean | null>(null);
 
   useEffect(() => {
     async function loadStorage() {
       const storedUser = await AsyncStorage.getItem("@user");
       const storedToken = await AsyncStorage.getItem("@token");
+      const storedOnboarding = await AsyncStorage.getItem("@hasOnboarded");
+
+      if (storedOnboarding) setHasOnboarded(true);
+      else setHasOnboarded(false);
 
       if (storedUser && storedToken) {
         setUser(JSON.parse(storedUser));
@@ -59,6 +66,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     }
     loadStorage();
+  }, []);
+
+  const completeOnboarding = useCallback(async () => {
+    await AsyncStorage.setItem("@hasOnboarded", "true");
+    setHasOnboarded(true);
   }, []);
 
   const login = useCallback(
@@ -88,7 +100,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, token, login, register, logout }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        token,
+        login,
+        register,
+        logout,
+        hasOnboarded,
+        completeOnboarding,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
