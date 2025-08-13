@@ -3,38 +3,37 @@ import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import { useContext, useEffect } from "react";
 import * as NavigationBar from "expo-navigation-bar";
-import { StatusBar } from "react-native";
+import { StatusBar, View } from "react-native"; // Adicionado View para o loading
 import "react-native-reanimated";
 import { AuthContext, AuthProvider } from "@/context/authContext";
 
 function LayoutWithAuth() {
   const { user, hasOnboarded } = useContext(AuthContext);
 
+  // Mostra uma tela em branco (ou um spinner) enquanto o estado de autenticação está sendo carregado
   if (hasOnboarded === null) {
-    // ainda carregando AsyncStorage
-    return null;
+    return <View style={{ flex: 1, backgroundColor: '#FFF' }} />; // Evita piscar a tela
   }
+
+  // -> CORREÇÃO APLICADA AQUI
+  // A lógica agora sempre aponta para um grupo de rota de primeiro nível.
+  const initialRoute = user ? "(tabs)" : "(unauth)";
 
   return (
     <ThemeProvider value={DefaultTheme}>
-      <Stack
-        initialRouteName={
-          !hasOnboarded ? "(unauth)" : user ? "(tabs)" : "(unauth)/login"
-        }
-      >
+      <Stack initialRouteName={initialRoute}>
         <Stack.Screen name="(unauth)" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="(create)" options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" />
       </Stack>
-      <StatusBar barStyle="dark-content" backgroundColor="transparent" />
+      <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
     </ThemeProvider>
   );
 }
 
 export default function RootLayout() {
-  const { user } = useContext(AuthContext);
-
+  // A lógica de setupNavBar e carregamento de fontes continua a mesma
   useEffect(() => {
     async function setupNavBar() {
       await NavigationBar.setButtonStyleAsync("dark");

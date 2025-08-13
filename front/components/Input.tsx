@@ -1,30 +1,25 @@
-import { View, TextInput, StyleSheet } from "react-native";
+import React from 'react';
+import { View, TextInput, StyleSheet, TextInputProps } from "react-native";
 import { IconSymbol } from "@/components/ui/IconSymbol";
 
-interface InputProps {
-  placeholder: string;
-  iconName: any;
-  secureTextEntry?: boolean;
-  value?: string;
-  onChangeText?: (text: string) => void;
-}
+// -> 1. A interface de props agora estende TextInputProps
+// Isso permite que o componente aceite todas as props de um TextInput padrão.
+type InputProps = TextInputProps & {
+  // A prop 'iconName' é a única que definimos como obrigatória e customizada.
+  // Usamos um tipo genérico para pegar o tipo correto do nome do ícone.
+  iconName: React.ComponentProps<typeof IconSymbol>['name'];
+};
 
-export default function Input({
-  placeholder,
-  iconName,
-  secureTextEntry,
-  value,
-  onChangeText,
-}: InputProps) {
+// -> 2. A função agora usa o "rest operator" (...)
+// Ele pega a 'iconName' e agrupa todas as outras props (value, placeholder, keyboardType, etc.) em 'rest'.
+export default function Input({ iconName, ...rest }: InputProps) {
   return (
     <View style={styles.container}>
       <TextInput
         style={styles.input}
-        placeholder={placeholder}
         placeholderTextColor="#999"
-        secureTextEntry={secureTextEntry}
-        value={value}
-        onChangeText={onChangeText}
+        // -> 3. Todas as props em 'rest' são passadas diretamente para o TextInput
+        {...rest}
       />
       <View style={styles.icon}>
         <IconSymbol name={iconName} size={20} color="#999" />
@@ -33,6 +28,7 @@ export default function Input({
   );
 }
 
+// Os seus estilos originais foram mantidos
 const styles = StyleSheet.create({
   container: {
     position: "relative",
@@ -45,7 +41,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingVertical: 14,
     paddingLeft: 16,
-    paddingRight: 44,
+    paddingRight: 44, // Espaço para o ícone
     borderWidth: 1,
     borderColor: "#ccc",
     fontSize: 16,
@@ -53,6 +49,9 @@ const styles = StyleSheet.create({
   icon: {
     position: "absolute",
     right: 16,
-    top: 14,
+    // Centraliza o ícone verticalmente no input
+    top: 0,
+    bottom: 0,
+    justifyContent: 'center',
   },
 });

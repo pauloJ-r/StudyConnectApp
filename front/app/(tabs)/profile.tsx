@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useContext } from "react";
 import {
-  View,
-  StyleSheet,
-  Dimensions,
-  ActivityIndicator,
-  Text,
-  FlatList,
+    View,
+    StyleSheet,
+    Dimensions,
+    ActivityIndicator,
+    Text,
+    FlatList,
+    TouchableOpacity, // -> NOVO: Para o botão de logout
+    Alert,             // -> NOVO: Para o alerta de confirmação
 } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -16,14 +18,13 @@ import { HeaderProfile } from "@/components/HeaderProfile";
 import { ProfileStats } from "@/components/ProfileStats";
 import { AddButton } from "@/components/AddButton";
 import ResponseItem from "@/components/AnswersItem";
-import PostItem from "@/components/PostItem"; // Importe o PostItem
+import PostItem from "@/components/PostItem";
 
-// Importe suas funções e tipos
 import {
-  getUserProfile,
-  getPostsByUserId,
-  getAnswersByUserId,
-  getUserBadgesCount,
+    getUserProfile,
+    getPostsByUserId,
+    getAnswersByUserId,
+    getUserBadgesCount,
 } from "@/services/profileService";
 import type { UserProfile } from "@/services/profileService";
 import type { Post, Comment } from "@/types/post";
@@ -34,88 +35,87 @@ const PADDING_CONTAINER = 16;
 const GAP_ENTRE_ITENS = 16;
 const NUM_COLUNAS = 2;
 const screenWidth = Dimensions.get("window").width;
-const availableWidth =
-  screenWidth - PADDING_CONTAINER * 2 - GAP_ENTRE_ITENS * (NUM_COLUNAS - 1);
+const availableWidth = screenWidth - PADDING_CONTAINER * 2 - GAP_ENTRE_ITENS * (NUM_COLUNAS - 1);
 const itemWidth = availableWidth / NUM_COLUNAS;
-
-/*
-  Lembre-se de definir 'Post' e 'Answer' no seu arquivo de tipos central
-  (ex: src/types/index.ts)
-
-  export interface Post { id: number | string; ...outras props }
-  export interface Answer { id: number | string; text: string; countLikes: number; }
-*/
 
 type TabOption = "perguntas" | "respostas";
 
 export default function ProfilePage() {
-  const { user } = useContext(AuthContext);
-  const [activeTab, setActiveTab] = useState<TabOption>("perguntas");
+    // -> MODIFICADO: Pegamos a função 'logout' do contexto
+    const { user, logout } = useContext(AuthContext);
+    const [activeTab, setActiveTab] = useState<TabOption>("perguntas");
 
-  // Estados para os dados
-  const [profileData, setProfileData] = useState<UserProfile | null>(null);
-  const [stats, setStats] = useState({
-    perguntas: 0,
-    respostas: 0,
-    trofeus: 0,
-  });
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [answers, setAnswers] = useState<Comment[]>([]);
+    const [profileData, setProfileData] = useState<UserProfile | null>(null);
+    const [stats, setStats] = useState({ perguntas: 0, respostas: 0, trofeus: 0 });
+    const [posts, setPosts] = useState<Post[]>([]);
+    const [answers, setAnswers] = useState<Comment[]>([]);
 
-  // Estados de controle
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchProfileData = async () => {
-      const userId = user?.id;
-      try {
-        // Busca tudo em paralelo para máxima performance
-        const [profile, userPosts, userAnswers, badgesData] = await Promise.all(
-          [
-            getUserProfile(userId),
-            getPostsByUserId(userId), // <- Use sua função real aqui!
-            getAnswersByUserId(userId), // <- Use sua função real aqui!
-            getUserBadgesCount(userId),
-          ]
+    useEffect(() => {
+        // ... sua função fetchProfileData continua a mesma ...
+        const fetchProfileData = async () => {
+            if (!user?.id) return; // Garante que temos um ID de usuário
+            try {
+                const [profile, userPosts, userAnswers, badgesData] = await Promise.all([
+                    getUserProfile(user.id),
+                    getPostsByUserId(user.id),
+                    getAnswersByUserId(user.id),
+                    getUserBadgesCount(user.id),
+                ]);
+                setProfileData(profile);
+                setPosts(userPosts);
+                setAnswers(userAnswers);
+                setStats({
+                    perguntas: userPosts.length,
+                    respostas: userAnswers.length,
+                    trofeus: badgesData.totalBadges,
+                });
+            } catch (err) {
+                console.error("Ocorreu um erro ao buscar os dados do perfil:", err);
+                setError("Não foi possível carregar o perfil.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProfileData();
+    }, [user]); // Adicionamos 'user' como dependência para recarregar se o usuário mudar
+
+    // -> NOVO: Função para lidar com o logout
+    const handleLogout = () => {
+        Alert.alert(
+            "Sair da Conta",
+            "Você tem certeza que deseja sair?",
+            [
+                {
+                    text: "Cancelar",
+                    style: "cancel",
+                },
+                {
+                    text: "Sim, Sair",
+                    onPress: () => logout(), // Chama a função do AuthContext
+                    style: "destructive",
+                },
+            ]
         );
-
-        // Atualiza os states com os resultados
-        setProfileData(profile);
-        setPosts(userPosts);
-        setAnswers(userAnswers);
-        // Assume que badgesData tem a contagem de troféus, e as listas têm o 'length' para as contagens
-        setStats({
-          perguntas: userPosts.length,
-          respostas: userAnswers.length,
-          trofeus: badgesData.totalBadges,
-        });
-      } catch (err) {
-        console.error("Ocorreu um erro ao buscar os dados do perfil:", err);
-        setError("Não foi possível carregar o perfil.");
-      } finally {
-        setLoading(false);
-      }
     };
 
-    fetchProfileData();
-  }, []);
-
-  const renderPageHeader = () => (
-    <>
-      {profileData && (
-        <HeaderProfile
-          name={profileData.name}
-          course={profileData.course}
-          description={profileData.bio}
-          picturePath={profileData.picturePath}
-          linkedin={profileData.linkedin}
-          github={profileData.github}
-        />
-      )}
-
-      <View style={styles.statsContainer}>
-        <View style={{ width: itemWidth }}>
+    const renderPageHeader = () => (
+        <>
+            {profileData && (
+                <HeaderProfile
+                    name={profileData.name}
+                    course={profileData.course}
+                    description={profileData.bio}
+                    picturePath={profileData.picturePath}
+                    linkedin={profileData.linkedin}
+                    github={profileData.github}
+                />
+            )}
+            <View style={styles.statsContainer}>
+                        <View style={{ width: itemWidth }}>
           <ProfileStats label="Perguntas" value={stats.perguntas} />
         </View>
         <View style={{ width: itemWidth }}>
@@ -127,10 +127,15 @@ export default function ProfilePage() {
         <View style={styles.grupos}>
           <ProfileStats label="Grupos" value={0} disabled />
         </View>
-      </View>
+            </View>
 
-      <View style={styles.switcherContainer}>
-        <BaseTabSwitcher>
+            {/* -> NOVO: Botão de Logout adicionado abaixo das estatísticas */}
+            <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+                <Text style={styles.logoutButtonText}>Sair da Conta</Text>
+            </TouchableOpacity>
+
+            <View style={styles.switcherContainer}>
+                 <BaseTabSwitcher>
           <TabSwitcherSelector
             text="Perguntas"
             isActive={activeTab === "perguntas"}
@@ -142,77 +147,69 @@ export default function ProfilePage() {
             onTabPress={() => setActiveTab("respostas")}
           />
         </BaseTabSwitcher>
-      </View>
-    </>
-  );
-
-  if (loading) {
-    return <ActivityIndicator style={styles.centered} size="large" />;
-  }
-
-  if (error) {
-    return (
-      <View style={styles.centered}>
-        <Text>{error}</Text>
-      </View>
+            </View>
+        </>
     );
-  }
 
-  return (
-    <SafeAreaView style={styles.safeArea}>
-      {activeTab === "perguntas" && (
-        <FlatList
-          data={posts}
-          // 1. CORREÇÃO DO KEY EXTRACTOR: Use a chave correta "_id"
-          keyExtractor={(item) => item._id}
-          // 2. CORREÇÃO DAS PROPS NO RENDERITEM: Mapeie os dados da API
-          renderItem={({ item }) => <PostItem postData={item} />}
-          ListHeaderComponent={renderPageHeader}
-          contentContainerStyle={styles.listContent}
-          ListEmptyComponent={
-            <View style={styles.centered}>
-              <Text>Nenhuma pergunta encontrada.</Text>
-            </View>
-          }
-        />
-      )}
+    if (loading) {
+        return <ActivityIndicator style={styles.centered} size="large" />;
+    }
 
-      {activeTab === "respostas" && (
-        <FlatList
-          data={answers}
-          renderItem={({ item }) => <ResponseItem {...item} />}
-          keyExtractor={(item) => item.id.toString()}
-          ListHeaderComponent={renderPageHeader}
-          contentContainerStyle={styles.listContent}
-          ListEmptyComponent={
-            <View style={styles.centered}>
-              <Text>Nenhuma resposta encontrada.</Text>
-            </View>
-          }
-        />
-      )}
+    if (error) {
+        return <View style={styles.centered}><Text>{error}</Text></View>;
+    }
 
-      <AddButton />
-    </SafeAreaView>
-  );
+    return (
+        <SafeAreaView style={styles.safeArea}>
+            {/* ... suas FlatLists para perguntas e respostas ... */}
+            {activeTab === "perguntas" && (
+                <FlatList
+                    data={posts}
+                    keyExtractor={(item) => item._id}
+                    renderItem={({ item }) => <PostItem postData={item} />}
+                    ListHeaderComponent={renderPageHeader}
+                    contentContainerStyle={styles.listContent}
+                    ListEmptyComponent={<View style={styles.centered}><Text>Nenhuma pergunta encontrada.</Text></View>}
+                />
+            )}
+
+            {activeTab === "respostas" && (
+                <FlatList
+                    data={answers}
+                    renderItem={({ item }) => <ResponseItem {...item} />}
+                    keyExtractor={(item, index) => item.id?.toString() ?? index.toString()}
+                    ListHeaderComponent={renderPageHeader}
+                    contentContainerStyle={styles.listContent}
+                    ListEmptyComponent={<View style={styles.centered}><Text>Nenhuma resposta encontrada.</Text></View>}
+                />
+            )}
+            <AddButton />
+        </SafeAreaView>
+    );
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: "#E7E7E7" },
-  listContent: { padding: PADDING_CONTAINER, paddingBottom: 80 },
-  centered: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-  },
-  switcherContainer: { alignItems: "center", marginBottom: 10 },
-  statsContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: GAP_ENTRE_ITENS,
-    marginBottom: 24,
-    marginTop: 16,
-  },
-  grupos: { width: itemWidth },
+    safeArea: { flex: 1, backgroundColor: "#E7E7E7" },
+    listContent: { padding: PADDING_CONTAINER, paddingBottom: 80 },
+    centered: { flex: 1, justifyContent: "center", alignItems: "center", padding: 20 },
+    switcherContainer: { alignItems: "center", marginBottom: 10, marginTop: 24 }, // Adicionado marginTop
+    statsContainer: { flexDirection: "row", flexWrap: "wrap", gap: GAP_ENTRE_ITENS, marginBottom: 24, marginTop: 16 },
+    grupos: { width: itemWidth },
+    
+    // -> NOVO: Estilos para o botão de logout
+    logoutButton: {
+        marginTop: 16,
+        paddingVertical: 12,
+        paddingHorizontal: 24,
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: '#D1D5DB', // Um cinza claro
+        backgroundColor: '#FFF',
+    },
+    logoutButtonText: {
+        textAlign: 'center',
+        color: '#EF4444', // Um tom de vermelho para indicar a ação
+        fontWeight: '500',
+        fontSize: 16,
+    }
 });

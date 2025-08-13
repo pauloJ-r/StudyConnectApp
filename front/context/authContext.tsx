@@ -2,6 +2,7 @@
 import React, { createContext, useState, useEffect, useCallback } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import useAuthService from "../services/authService";
+import { useRouter } from "expo-router"; // -> 1. Importe o useRouter
 
 type Picture = {
   uri: string;
@@ -92,12 +93,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     [registerService]
   );
 
+  const router = useRouter();
+
   const logout = useCallback(async () => {
     setUser(null);
     setToken(null);
     await AsyncStorage.removeItem("@user");
     await AsyncStorage.removeItem("@token");
-  }, []);
+      router.replace('/login'); // Use a rota correta para sua tela de login
+
+    }, [router]);
 
   return (
     <AuthContext.Provider
